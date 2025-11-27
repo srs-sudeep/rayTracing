@@ -5,7 +5,8 @@
   padding: var(--space-sm) var(--space-lg);
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-subtle);
-  gap: var(--space-lg);
+  gap: var(--space-md);
+  flex-wrap: wrap;
 }
 
 .header-brand {
@@ -20,20 +21,15 @@
 }
 
 .logo-icon {
-  font-size: 1.5rem;
-  color: var(--accent-primary);
-  animation: glow 3s ease-in-out infinite;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
 }
 
-@keyframes glow {
-  0%, 100% { 
-    opacity: 1;
-    text-shadow: 0 0 10px var(--accent-primary);
-  }
-  50% { 
-    opacity: 0.7;
-    text-shadow: 0 0 20px var(--accent-primary);
-  }
+.logo-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 8px rgba(232, 93, 76, 0.3));
 }
 
 .logo-text {
@@ -43,17 +39,21 @@
 }
 
 .logo-text h1 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   margin: 0;
+  color: var(--text-primary);
 }
 
-.logo-subtitle {
+.logo-highlight {
+  color: var(--accent-primary);
+}
+
+.logo-tagline {
   font-size: 0.6rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
 }
 
 .header-stats {
@@ -80,14 +80,14 @@
 }
 
 .stat-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: var(--text-muted);
   text-transform: uppercase;
 }
 
 .stat-divider {
   width: 1px;
-  height: 20px;
+  height: 16px;
   background: var(--border-subtle);
 }
 
@@ -96,35 +96,50 @@
   gap: var(--space-sm);
 }
 
-.header-link {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  text-decoration: none;
+.header-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
   padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
   transition: var(--transition-fast);
 }
 
-.header-link:hover {
-  color: var(--text-primary);
+.header-btn:hover {
   background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+}
+
+.header-btn span:first-child {
+  font-size: 0.9rem;
 }
 
 @media (max-width: 768px) {
   .header {
-    flex-wrap: wrap;
     justify-content: center;
+    gap: var(--space-sm);
   }
   
   .header-stats {
     order: 3;
     width: 100%;
     justify-content: center;
-    margin-top: var(--space-sm);
   }
   
-  .logo-subtitle {
+  .logo-tagline {
+    display: none;
+  }
+  
+  .header-btn span:last-child {
     display: none;
   }
 }
-
