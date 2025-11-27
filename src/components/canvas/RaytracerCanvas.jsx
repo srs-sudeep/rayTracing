@@ -24,7 +24,6 @@ function RaytracerCanvas({
     const updateSize = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        // Fill as much as possible while staying square
         const maxSize = Math.min(rect.width - 20, rect.height - 20);
         const size = Math.max(300, maxSize);
         setDisplaySize({ width: size, height: size });
@@ -33,8 +32,6 @@ function RaytracerCanvas({
 
     updateSize();
     window.addEventListener('resize', updateSize);
-    
-    // Also update after a short delay to catch layout shifts
     const timeout = setTimeout(updateSize, 100);
     
     return () => {
@@ -61,7 +58,13 @@ function RaytracerCanvas({
     wasmModule.updateLight(light.x, light.y, light.z);
     wasmModule.updateMaterial(material.specular, material.shininess, material.reflectivity);
     wasmModule.updateSphereColor(material.color.r, material.color.g, material.color.b);
-    wasmModule.updateCamera(camera.x, camera.y, camera.z);
+    
+    // Camera updates
+    wasmModule.updateCamera(camera.position.x, camera.position.y, camera.position.z);
+    wasmModule.setCameraTarget(camera.target.x, camera.target.y, camera.target.z);
+    wasmModule.setCameraFov(camera.fov);
+    
+    // View settings
     wasmModule.setShowGroundPlane(view.showGroundPlane);
     wasmModule.setShowGrid(view.showGrid);
     wasmModule.setGridScale(view.gridScale);
@@ -122,10 +125,14 @@ function RaytracerCanvas({
 
     wasmModule.orbitCamera(deltaX, deltaY);
     
+    // Sync camera position back to React state
     onCameraChange({
-      x: wasmModule.getCameraX(),
-      y: wasmModule.getCameraY(),
-      z: wasmModule.getCameraZ()
+      ...camera,
+      position: {
+        x: wasmModule.getCameraX(),
+        y: wasmModule.getCameraY(),
+        z: wasmModule.getCameraZ()
+      }
     });
   };
 
@@ -141,9 +148,12 @@ function RaytracerCanvas({
     wasmModule.zoomCamera(delta);
     
     onCameraChange({
-      x: wasmModule.getCameraX(),
-      y: wasmModule.getCameraY(),
-      z: wasmModule.getCameraZ()
+      ...camera,
+      position: {
+        x: wasmModule.getCameraX(),
+        y: wasmModule.getCameraY(),
+        z: wasmModule.getCameraZ()
+      }
     });
   };
 
@@ -165,7 +175,7 @@ function RaytracerCanvas({
         onWheel={handleWheel}
       />
       <div className="canvas-badge top-left">
-        {view.resolution}×{view.resolution}
+        {view.resolution}×{view.resolution} • FOV {camera.fov}°
       </div>
       <div className="canvas-badge bottom-right">
         Drag to orbit • Scroll to zoom

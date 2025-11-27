@@ -6,7 +6,11 @@ import RaytracerCanvas from './components/canvas/RaytracerCanvas';
 import ControlPanel from './components/controls/ControlPanel';
 import './App.css';
 
-const DEFAULT_CAMERA = { x: 0, y: 0.5, z: -4 };
+const DEFAULT_CAMERA = { 
+  position: { x: 0, y: 0.5, z: -4 },
+  target: { x: 0, y: 0, z: 0 },
+  fov: 60
+};
 
 function App() {
   const { wasmModule, loading, error } = useWasm();
@@ -21,7 +25,11 @@ function App() {
     shininess: 32, 
     reflectivity: 0.3 
   });
-  const [camera, setCamera] = useState({ ...DEFAULT_CAMERA });
+  const [camera, setCamera] = useState({ 
+    position: { ...DEFAULT_CAMERA.position },
+    target: { ...DEFAULT_CAMERA.target },
+    fov: DEFAULT_CAMERA.fov
+  });
   const [view, setView] = useState({ 
     showGroundPlane: true,
     showGrid: true, 
@@ -49,9 +57,15 @@ function App() {
   }, [wasmModule]);
 
   const handleCameraReset = () => {
-    setCamera({ ...DEFAULT_CAMERA });
+    setCamera({ 
+      position: { ...DEFAULT_CAMERA.position },
+      target: { ...DEFAULT_CAMERA.target },
+      fov: DEFAULT_CAMERA.fov
+    });
     if (wasmModule) {
-      wasmModule.updateCamera(DEFAULT_CAMERA.x, DEFAULT_CAMERA.y, DEFAULT_CAMERA.z);
+      wasmModule.updateCamera(DEFAULT_CAMERA.position.x, DEFAULT_CAMERA.position.y, DEFAULT_CAMERA.position.z);
+      wasmModule.setCameraTarget(DEFAULT_CAMERA.target.x, DEFAULT_CAMERA.target.y, DEFAULT_CAMERA.target.z);
+      wasmModule.setCameraFov(DEFAULT_CAMERA.fov);
     }
   };
 

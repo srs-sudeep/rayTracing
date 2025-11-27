@@ -303,4 +303,18 @@ public:
     int getSphereCount() const {
         return static_cast<int>(spheres.size());
     }
+
+    // Camera FOV and target
+    void setCameraFov(float fov) {
+        camera.setFov(fov);
+    }
+
+    void setCameraTarget(float x, float y, float z) {
+        camera.setTarget(x, y, z);
+    }
+
+    float getCameraFov() const { return camera.getFov(); }
+    float getCameraTargetX() const { return camera.getTargetX(); }
+    float getCameraTargetY() const { return camera.getTargetY(); }
+    float getCameraTargetZ() const { return camera.getTargetZ(); }
 };

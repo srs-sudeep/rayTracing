@@ -92,6 +92,19 @@ float getCameraX() { return globalScene.camera.position.x; }
 float getCameraY() { return globalScene.camera.position.y; }
 float getCameraZ() { return globalScene.camera.position.z; }
 
+void setCameraFov(float fov) {
+    globalScene.setCameraFov(fov);
+}
+
+void setCameraTarget(float x, float y, float z) {
+    globalScene.setCameraTarget(x, y, z);
+}
+
+float getCameraFov() { return globalScene.getCameraFov(); }
+float getCameraTargetX() { return globalScene.getCameraTargetX(); }
+float getCameraTargetY() { return globalScene.getCameraTargetY(); }
+float getCameraTargetZ() { return globalScene.getCameraTargetZ(); }
+
 // ============================================================================
 // View API
 // ============================================================================
@@ -139,6 +152,12 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     emscripten::function("getCameraX", &getCameraX);
     emscripten::function("getCameraY", &getCameraY);
     emscripten::function("getCameraZ", &getCameraZ);
+    emscripten::function("setCameraFov", &setCameraFov);
+    emscripten::function("setCameraTarget", &setCameraTarget);
+    emscripten::function("getCameraFov", &getCameraFov);
+    emscripten::function("getCameraTargetX", &getCameraTargetX);
+    emscripten::function("getCameraTargetY", &getCameraTargetY);
+    emscripten::function("getCameraTargetZ", &getCameraTargetZ);
     
     // View
     emscripten::function("setShowGrid", &setShowGrid);

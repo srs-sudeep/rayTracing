@@ -81,5 +81,20 @@ struct Camera {
         position = target + direction * distance;
         updateBasis();
     }
+
+    void setFov(float newFov) {
+        fov = std::fmax(10.0f, std::fmin(120.0f, newFov));
+        updateBasis();
+    }
+
+    void setTarget(float x, float y, float z) {
+        target = Vec3(x, y, z);
+        updateBasis();
+    }
+
+    float getFov() const { return fov; }
+    float getTargetX() const { return target.x; }
+    float getTargetY() const { return target.y; }
+    float getTargetZ() const { return target.z; }
 };
 
