@@ -98,6 +98,65 @@
   gap: var(--space-sm);
 }
 
+/* Scene Presets */
+.scene-presets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.scene-preset-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: left;
+}
+
+.scene-preset-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-accent);
+}
+
+.scene-preset-btn.active {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 1px var(--accent-primary);
+}
+
+.scene-preset-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.preset-icon {
+  font-size: 1.2rem;
+  width: 32px;
+  text-align: center;
+}
+
+.preset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.preset-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.preset-desc {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
 /* Button Group */
 .button-group {
   display: flex;

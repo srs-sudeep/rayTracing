@@ -1,17 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useWasm from './hooks/useWasm';
 import Header from './components/layout/Header';
+import SceneToolbar from './components/canvas/SceneToolbar';
 import RaytracerCanvas from './components/canvas/RaytracerCanvas';
 import ControlPanel from './components/controls/ControlPanel';
 import './App.css';
 
-const DEFAULT_CAMERA = { x: 0, y: 0, z: -3 };
+const DEFAULT_CAMERA = { x: 0, y: 0.5, z: -4 };
 
 function App() {
   const { wasmModule, loading, error } = useWasm();
   
   // Scene state
-  const [light, setLight] = useState({ x: 2, y: 2, z: -1 });
+  const [scenePreset, setScenePreset] = useState(0);
+  const [sphereCount, setSphereCount] = useState(1);
+  const [light, setLight] = useState({ x: 2, y: 3, z: -2 });
   const [material, setMaterial] = useState({ specular: 0.5, shininess: 32, reflectivity: 0.3 });
   const [camera, setCamera] = useState({ ...DEFAULT_CAMERA });
   const [view, setView] = useState({ 
@@ -23,6 +26,22 @@ function App() {
     resolution: 512 
   });
   const [renderTime, setRenderTime] = useState(0);
+
+  // Handle scene preset change
+  const handlePresetChange = useCallback((presetId) => {
+    setScenePreset(presetId);
+    if (wasmModule) {
+      wasmModule.loadScenePreset(presetId);
+      setSphereCount(wasmModule.getSphereCount());
+    }
+  }, [wasmModule]);
+
+  // Initialize when WASM loads
+  useEffect(() => {
+    if (wasmModule) {
+      setSphereCount(wasmModule.getSphereCount());
+    }
+  }, [wasmModule]);
 
   const handleCameraReset = () => {
     setCamera({ ...DEFAULT_CAMERA });
@@ -38,35 +57,45 @@ function App() {
       <Header renderTime={renderTime} resolution={view.resolution} />
 
       <main className="main-content">
-        <div className="canvas-area">
-          {loading && (
-            <div className="status-card">
-              <div className="spinner" />
-              <p className="status-title">Initializing WebAssembly</p>
-              <p className="status-subtitle">Loading ray tracing engine...</p>
-            </div>
-          )}
+        <div className="viewport">
+          <SceneToolbar
+            activePreset={scenePreset}
+            onPresetChange={handlePresetChange}
+            sphereCount={sphereCount}
+            disabled={isDisabled}
+          />
           
-          {error && (
-            <div className="status-card error">
-              <span className="status-icon">⚠</span>
-              <p className="status-title">Failed to Load Module</p>
-              <p className="status-subtitle">{error}</p>
-              <code className="status-hint">Run: npm run build:wasm</code>
-            </div>
-          )}
+          <div className="canvas-area">
+            {loading && (
+              <div className="status-card">
+                <div className="spinner" />
+                <p className="status-title">Initializing WebAssembly</p>
+                <p className="status-subtitle">Loading ray tracing engine...</p>
+              </div>
+            )}
+            
+            {error && (
+              <div className="status-card error">
+                <span className="status-icon">⚠</span>
+                <p className="status-title">Failed to Load Module</p>
+                <p className="status-subtitle">{error}</p>
+                <code className="status-hint">Run: npm run build:wasm</code>
+              </div>
+            )}
 
-          {!loading && !error && wasmModule && (
-            <RaytracerCanvas
-              wasmModule={wasmModule}
-              light={light}
-              material={material}
-              camera={camera}
-              view={view}
-              onCameraChange={setCamera}
-              onRenderTime={setRenderTime}
-            />
-          )}
+            {!loading && !error && wasmModule && (
+              <RaytracerCanvas
+                wasmModule={wasmModule}
+                light={light}
+                material={material}
+                camera={camera}
+                view={view}
+                scenePreset={scenePreset}
+                onCameraChange={setCamera}
+                onRenderTime={setRenderTime}
+              />
+            )}
+          </div>
         </div>
 
         <aside className="sidebar">
@@ -84,12 +113,11 @@ function App() {
           />
 
           <div className="scene-info">
-            <h3>Scene</h3>
+            <h3>Render Info</h3>
             <ul>
-              <li><span>Objects</span><span>1 Sphere + Ground</span></li>
+              <li><span>Objects</span><span>{sphereCount} + Ground</span></li>
               <li><span>Lights</span><span>1 Point</span></li>
-              <li><span>Shader</span><span>Blinn-Phong</span></li>
-              <li><span>Reflections</span><span>{view.maxBounces} bounces</span></li>
+              <li><span>Bounces</span><span>{view.maxBounces}</span></li>
             </ul>
           </div>
         </aside>

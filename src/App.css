@@ -58,6 +58,10 @@
   padding: 0;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -68,30 +72,37 @@ body {
   font-family: var(--font-sans);
   background: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
   line-height: 1.5;
+  overflow: hidden;
 }
 
-/* App Layout */
+/* App Layout - Full height */
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   background: 
-    radial-gradient(ellipse at 0% 0%, rgba(232, 93, 76, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(78, 205, 196, 0.04) 0%, transparent 50%),
-    linear-gradient(180deg, var(--bg-primary) 0%, #0c0c0e 100%);
+    radial-gradient(ellipse at 0% 0%, rgba(232, 93, 76, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(78, 205, 196, 0.03) 0%, transparent 50%),
+    var(--bg-primary);
 }
 
-/* Main Content */
+/* Main Content - Fills available space */
 .main-content {
   flex: 1;
   display: flex;
-  padding: var(--space-lg);
-  gap: var(--space-lg);
-  max-width: 1600px;
-  margin: 0 auto;
-  width: 100%;
+  padding: var(--space-md);
+  gap: var(--space-md);
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Viewport - Canvas area with toolbar */
+.viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 /* Canvas Area */
@@ -100,7 +111,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 /* Status Cards */
@@ -111,11 +125,10 @@ body {
   justify-content: center;
   gap: var(--space-md);
   padding: var(--space-xl);
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   text-align: center;
-  min-width: 300px;
 }
 
 .status-card.error {
@@ -167,6 +180,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  overflow: hidden;
 }
 
 /* Scene Info */
@@ -178,7 +192,7 @@ body {
 }
 
 .scene-info h3 {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -196,7 +210,7 @@ body {
 .scene-info li {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
 }
 
 .scene-info li span:first-child {
@@ -208,15 +222,15 @@ body {
   font-family: var(--font-mono);
 }
 
-/* Footer */
+/* Footer - Compact */
 .footer {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  padding: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   letter-spacing: 0.03em;
   border-top: 1px solid var(--border-subtle);
   background: var(--bg-secondary);
@@ -230,15 +244,23 @@ body {
 @media (max-width: 900px) {
   .main-content {
     flex-direction: column;
-    align-items: center;
   }
 
   .sidebar {
     width: 100%;
-    max-width: 500px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-y: visible;
   }
 
-  .canvas-area {
-    width: 100%;
+  .sidebar > * {
+    flex: 1;
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-content {
+    padding: var(--space-sm);
   }
 }

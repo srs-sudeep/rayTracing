@@ -2,27 +2,37 @@
   display: flex;
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 0 var(--space-xs);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) var(--space-xs);
   background: transparent;
   border: none;
   color: var(--text-muted);
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   cursor: pointer;
   transition: var(--transition-fast);
   position: relative;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .tab:hover {
@@ -36,17 +46,27 @@
 }
 
 .tab-icon {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .tab-label {
-  display: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-@media (min-width: 1100px) {
+/* Always show labels, just make them smaller on narrow widths */
+@media (max-width: 350px) {
   .tab-label {
-    display: inline;
+    display: none;
+  }
+  
+  .tab {
+    padding: var(--space-sm);
+  }
+  
+  .tab-icon {
+    font-size: 1rem;
   }
 }
-

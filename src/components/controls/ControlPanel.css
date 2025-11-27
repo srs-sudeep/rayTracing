@@ -5,10 +5,29 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .control-content {
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-accent) transparent;
 }
 
+.control-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.control-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.control-content::-webkit-scrollbar-thumb {
+  background: var(--border-accent);
+  border-radius: 3px;
+}
+
+.control-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

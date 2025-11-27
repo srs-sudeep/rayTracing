@@ -37,6 +37,18 @@ std::vector<uint8_t> render(int width, int height) {
 }
 
 // ============================================================================
+// Scene API
+// ============================================================================
+
+void loadScenePreset(int preset) {
+    globalScene.loadPreset(static_cast<ScenePreset>(preset));
+}
+
+int getSphereCount() {
+    return globalScene.getSphereCount();
+}
+
+// ============================================================================
 // Light API
 // ============================================================================
 
@@ -103,6 +115,10 @@ void setMaxReflectionDepth(int depth) {
 EMSCRIPTEN_BINDINGS(raytracer_module) {
     // Render
     emscripten::function("render", &render);
+    
+    // Scene
+    emscripten::function("loadScenePreset", &loadScenePreset);
+    emscripten::function("getSphereCount", &getSphereCount);
     
     // Light
     emscripten::function("updateLight", &updateLight);
