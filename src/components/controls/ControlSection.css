@@ -82,13 +82,14 @@
   cursor: not-allowed;
 }
 
-.chip-accent {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-pink) 100%);
-  border-color: transparent;
+.chip-active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
   color: white;
 }
 
-.chip-accent:hover {
+.chip-active:hover {
+  background: var(--accent-primary);
   opacity: 0.9;
 }
 

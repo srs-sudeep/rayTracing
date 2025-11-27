@@ -107,16 +107,22 @@ function MaterialControls({ material, onChange, disabled }) {
       <div className="control-group">
         <span className="group-label">Material Type</span>
         <div className="preset-chips">
-          {MATERIAL_PRESETS.map((preset) => (
-            <button
-              key={preset.name}
-              className={`chip ${preset.name === 'Mirror' ? 'chip-accent' : ''}`}
-              onClick={() => applyMaterialPreset(preset)}
-              disabled={disabled}
-            >
-              {preset.name}
-            </button>
-          ))}
+          {MATERIAL_PRESETS.map((preset) => {
+            const isActive = 
+              material.specular === preset.specular &&
+              material.shininess === preset.shininess &&
+              material.reflectivity === preset.reflectivity;
+            return (
+              <button
+                key={preset.name}
+                className={`chip ${isActive ? 'chip-active' : ''}`}
+                onClick={() => applyMaterialPreset(preset)}
+                disabled={disabled}
+              >
+                {preset.name}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
