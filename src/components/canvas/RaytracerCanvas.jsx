@@ -23,11 +23,13 @@ function RaytracerCanvas({
 
     // Update C++ state
     wasmModule.updateLight(light.x, light.y, light.z);
-    wasmModule.updateMaterial(material.specular, material.shininess);
+    wasmModule.updateMaterial(material.specular, material.shininess, material.reflectivity);
     wasmModule.updateCamera(camera.x, camera.y, camera.z);
     wasmModule.setShowGroundPlane(view.showGroundPlane);
     wasmModule.setShowGrid(view.showGrid);
     wasmModule.setGridScale(view.gridScale);
+    wasmModule.updateGroundReflectivity(view.groundReflectivity);
+    wasmModule.setMaxReflectionDepth(view.maxBounces);
 
     // Time the render
     const startTime = performance.now();

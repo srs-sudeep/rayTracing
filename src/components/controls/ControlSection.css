@@ -82,6 +82,22 @@
   cursor: not-allowed;
 }
 
+.chip-accent {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-pink) 100%);
+  border-color: transparent;
+  color: white;
+}
+
+.chip-accent:hover {
+  opacity: 0.9;
+}
+
+.preset-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
 /* Button Group */
 .button-group {
   display: flex;

@@ -12,12 +12,14 @@ function App() {
   
   // Scene state
   const [light, setLight] = useState({ x: 2, y: 2, z: -1 });
-  const [material, setMaterial] = useState({ specular: 0.5, shininess: 32 });
+  const [material, setMaterial] = useState({ specular: 0.5, shininess: 32, reflectivity: 0.3 });
   const [camera, setCamera] = useState({ ...DEFAULT_CAMERA });
   const [view, setView] = useState({ 
     showGroundPlane: true,
     showGrid: true, 
     gridScale: 1.0,
+    groundReflectivity: 0.15,
+    maxBounces: 5,
     resolution: 512 
   });
   const [renderTime, setRenderTime] = useState(0);
@@ -87,7 +89,7 @@ function App() {
               <li><span>Objects</span><span>1 Sphere + Ground</span></li>
               <li><span>Lights</span><span>1 Point</span></li>
               <li><span>Shader</span><span>Blinn-Phong</span></li>
-              <li><span>Shadows</span><span>Hard</span></li>
+              <li><span>Reflections</span><span>{view.maxBounces} bounces</span></li>
             </ul>
           </div>
         </aside>

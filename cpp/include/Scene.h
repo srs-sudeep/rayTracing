@@ -18,15 +18,21 @@ public:
     Vec3 backgroundColor;
     Vec3 horizonColor;
     bool showGroundPlane;
+    int maxReflectionDepth;
 
     Scene() 
         : backgroundColor(Vec3(0.05f, 0.05f, 0.08f))
         , horizonColor(Vec3(0.12f, 0.12f, 0.15f))
-        , showGroundPlane(true) 
+        , showGroundPlane(true)
+        , maxReflectionDepth(5)
     {
-        // Default scene setup - red sphere
+        // Default scene setup - red sphere with some reflectivity
         Material redMaterial(Vec3(0.9f, 0.2f, 0.15f), 0.5f, 32.0f);
+        redMaterial.reflectivity = 0.3f;
         spheres.push_back(Sphere(Vec3(0.0f, 0.0f, 0.0f), 1.0f, redMaterial));
+        
+        // Ground plane with subtle reflectivity
+        groundPlane.material.reflectivity = 0.15f;
         
         // Default light
         lights.push_back(Light(Vec3(2.0f, 3.0f, -2.0f), Vec3(1.0f, 1.0f, 1.0f), 1.0f));
@@ -84,11 +90,8 @@ public:
         return horizonColor * (1.0f - t) + backgroundColor * t;
     }
 
-    Vec3 shade(const Ray& ray, const HitRecord& hit) const {
-        if (!hit.hit) {
-            return getBackgroundColor(ray);
-        }
-
+    // Calculate local illumination (diffuse + specular)
+    Vec3 calculateLocalLighting(const Ray& ray, const HitRecord& hit) const {
         Vec3 color(0, 0, 0);
         Vec3 viewDir = (ray.origin - hit.point).normalize();
 
@@ -98,7 +101,7 @@ public:
             // Shadow check
             float shadowFactor = 1.0f;
             if (isInShadow(hit.point, light.position)) {
-                shadowFactor = 0.3f; // Soft shadow - not completely dark
+                shadowFactor = 0.3f;
             }
             
             // Diffuse
@@ -117,15 +120,67 @@ public:
         Vec3 ambient = hit.material.color * hit.material.ambient;
         color = color + ambient;
 
-        return color.clamp();
+        return color;
+    }
+
+    // Recursive ray tracing with reflections
+    Vec3 traceRay(const Ray& ray, int depth) const {
+        if (depth >= maxReflectionDepth) {
+            return getBackgroundColor(ray);
+        }
+
+        HitRecord hit = trace(ray);
+
+        if (!hit.hit) {
+            return getBackgroundColor(ray);
+        }
+
+        // Calculate local color (diffuse + specular + ambient)
+        Vec3 localColor = calculateLocalLighting(ray, hit);
+
+        // If material is reflective, trace reflection ray
+        float reflectivity = hit.material.reflectivity;
+        if (reflectivity > 0.001f && depth < maxReflectionDepth) {
+            // Calculate reflection direction
+            Vec3 viewDir = ray.direction;
+            Vec3 reflectDir = viewDir.reflect(hit.normal);
+            
+            // Offset the origin slightly to avoid self-intersection
+            Vec3 reflectOrigin = hit.point + hit.normal * 0.001f;
+            Ray reflectRay(reflectOrigin, reflectDir);
+            
+            // Recursively trace the reflection
+            Vec3 reflectedColor = traceRay(reflectRay, depth + 1);
+            
+            // Blend local color with reflected color based on reflectivity
+            // Fresnel-like effect: more reflection at grazing angles
+            float cosTheta = std::abs(hit.normal.dot(viewDir * -1.0f));
+            float fresnelFactor = reflectivity + (1.0f - reflectivity) * std::pow(1.0f - cosTheta, 3.0f);
+            fresnelFactor = std::fmin(1.0f, fresnelFactor);
+            
+            localColor = localColor * (1.0f - fresnelFactor) + reflectedColor * fresnelFactor;
+        }
+
+        return localColor.clamp();
+    }
+
+    // Main shading function (entry point)
+    Vec3 shade(const Ray& ray, const HitRecord& hit) const {
+        // Use recursive tracing starting at depth 0
+        return traceRay(ray, 0);
     }
 
     // Update functions for JS bindings
-    void updateMainSphere(float specular, float shininess) {
+    void updateMainSphere(float specular, float shininess, float reflectivity) {
         if (!spheres.empty()) {
             spheres[0].material.specularIntensity = specular;
             spheres[0].material.shininess = shininess;
+            spheres[0].material.reflectivity = reflectivity;
         }
+    }
+
+    void updateGroundReflectivity(float reflectivity) {
+        groundPlane.material.reflectivity = reflectivity;
     }
 
     void updateLight(float x, float y, float z) {
@@ -157,5 +212,9 @@ public:
 
     void setShowGrid(bool show) {
         groundPlane.showGrid = show;
+    }
+
+    void setMaxReflectionDepth(int depth) {
+        maxReflectionDepth = std::max(1, std::min(10, depth));
     }
 };

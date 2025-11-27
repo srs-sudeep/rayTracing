@@ -48,8 +48,12 @@ void updateLight(float x, float y, float z) {
 // Material API
 // ============================================================================
 
-void updateMaterial(float specular, float shininess) {
-    globalScene.updateMainSphere(specular, shininess);
+void updateMaterial(float specular, float shininess, float reflectivity) {
+    globalScene.updateMainSphere(specular, shininess, reflectivity);
+}
+
+void updateGroundReflectivity(float reflectivity) {
+    globalScene.updateGroundReflectivity(reflectivity);
 }
 
 // ============================================================================
@@ -88,6 +92,10 @@ void setShowGroundPlane(bool show) {
     globalScene.setShowGroundPlane(show);
 }
 
+void setMaxReflectionDepth(int depth) {
+    globalScene.setMaxReflectionDepth(depth);
+}
+
 // ============================================================================
 // Emscripten Bindings
 // ============================================================================
@@ -101,6 +109,7 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     
     // Material
     emscripten::function("updateMaterial", &updateMaterial);
+    emscripten::function("updateGroundReflectivity", &updateGroundReflectivity);
     
     // Camera
     emscripten::function("updateCamera", &updateCamera);
@@ -114,6 +123,7 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     emscripten::function("setShowGrid", &setShowGrid);
     emscripten::function("setGridScale", &setGridScale);
     emscripten::function("setShowGroundPlane", &setShowGroundPlane);
+    emscripten::function("setMaxReflectionDepth", &setMaxReflectionDepth);
     
     // Vector type
     emscripten::register_vector<uint8_t>("VectorUint8");

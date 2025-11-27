@@ -40,6 +40,37 @@ function ViewControls({ view, onChange, disabled }) {
             formatValue={(v) => `${v.toFixed(1)}x`}
           />
         )}
+
+        {view.showGroundPlane && (
+          <Slider
+            id="ground-reflectivity"
+            label="Ground Reflect"
+            value={view.groundReflectivity}
+            min={0}
+            max={0.8}
+            step={0.05}
+            color="#60a5fa"
+            onChange={(v) => handleChange('groundReflectivity', v)}
+            disabled={disabled}
+          />
+        )}
+      </div>
+
+      <div className="control-divider" />
+
+      <div className="control-group">
+        <Slider
+          id="max-bounces"
+          label="Max Bounces"
+          value={view.maxBounces}
+          min={1}
+          max={8}
+          step={1}
+          color="#f472b6"
+          onChange={(v) => handleChange('maxBounces', v)}
+          disabled={disabled}
+          formatValue={(v) => v.toFixed(0)}
+        />
       </div>
 
       <div className="control-divider" />
@@ -70,7 +101,7 @@ function ViewControls({ view, onChange, disabled }) {
       </div>
 
       <p className="control-hint">
-        🎨 Grid shows X (red) and Z (teal) axes
+        🪞 Higher bounces = more reflections
       </p>
     </div>
   );

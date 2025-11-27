@@ -23,8 +23,9 @@ public:
                 float v = (1.0f - 2.0f * y / height);
 
                 Ray ray = scene.camera.getRay(u, v);
-                HitRecord hit = scene.trace(ray);
-                Vec3 color = scene.shade(ray, hit);
+                
+                // Use recursive ray tracing with reflections
+                Vec3 color = scene.traceRay(ray, 0);
 
                 // Write to buffer
                 int index = (y * width + x) * 4;

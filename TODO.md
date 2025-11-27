@@ -36,11 +36,13 @@ A progressive enhancement plan for the ray tracer, organized by commits.
 - [x] Grid scale control
 - [x] Toggle ground plane and grid independently
 
-### 🔲 Commit 3: Reflections
-- [ ] Recursive ray tracing (max depth)
-- [ ] Reflectivity parameter per material
-- [ ] UI control for reflection intensity
-- [ ] Sphere reflects ground, ground reflects sphere
+### ✅ Commit 3: Reflections
+- [x] Recursive ray tracing (configurable max depth)
+- [x] Reflectivity parameter per material
+- [x] Fresnel-like effect (more reflection at grazing angles)
+- [x] Sphere reflects ground, ground reflects sphere
+- [x] UI controls: reflectivity slider, ground reflectivity, max bounces
+- [x] Material presets: Matte, Plastic, Glossy, Metal, Mirror
 
 ### 🔲 Commit 4: Multiple Spheres
 - [ ] Dynamic sphere array in C++
@@ -151,7 +153,7 @@ A progressive enhancement plan for the ray tracer, organized by commits.
 
 | Phase | Commits | Status |
 |-------|---------|--------|
-| Phase 1: Core | 0-4 | 🟡 In Progress (2/4 complete) |
+| Phase 1: Core | 0-4 | 🟡 In Progress (3/4 complete) |
 | Phase 2: Lighting | 5-8 | ⚪ Not Started |
 | Phase 3: Materials | 9-10 | ⚪ Not Started |
 | Phase 4: Scene | 11-12 | ⚪ Not Started |

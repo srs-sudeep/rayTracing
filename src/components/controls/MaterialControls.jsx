@@ -6,6 +6,10 @@ function MaterialControls({ material, onChange, disabled }) {
     onChange({ ...material, [prop]: value });
   };
 
+  const applyPreset = (preset) => {
+    onChange({ ...material, ...preset });
+  };
+
   return (
     <div className="control-section">
       <div className="control-group">
@@ -32,46 +36,63 @@ function MaterialControls({ material, onChange, disabled }) {
           disabled={disabled}
           formatValue={(v) => v.toFixed(0)}
         />
+        <Slider
+          id="reflectivity"
+          label="Reflectivity"
+          value={material.reflectivity}
+          min={0}
+          max={1}
+          step={0.05}
+          color="#60a5fa"
+          onChange={(v) => handleChange('reflectivity', v)}
+          disabled={disabled}
+        />
       </div>
 
-      <div className="control-info">
-        <span className="info-label">Preset</span>
-        <span className="info-value info-tag">Custom</span>
-      </div>
+      <div className="control-divider" />
 
-      <div className="preset-chips">
-        <button 
-          className="chip" 
-          onClick={() => onChange({ specular: 0.1, shininess: 8 })}
-          disabled={disabled}
-        >
-          Matte
-        </button>
-        <button 
-          className="chip" 
-          onClick={() => onChange({ specular: 0.4, shininess: 32 })}
-          disabled={disabled}
-        >
-          Plastic
-        </button>
-        <button 
-          className="chip" 
-          onClick={() => onChange({ specular: 0.8, shininess: 64 })}
-          disabled={disabled}
-        >
-          Glossy
-        </button>
-        <button 
-          className="chip" 
-          onClick={() => onChange({ specular: 1.0, shininess: 256 })}
-          disabled={disabled}
-        >
-          Metal
-        </button>
+      <div className="preset-section">
+        <span className="info-label">Presets</span>
+        <div className="preset-chips">
+          <button 
+            className="chip" 
+            onClick={() => applyPreset({ specular: 0.1, shininess: 8, reflectivity: 0 })}
+            disabled={disabled}
+          >
+            Matte
+          </button>
+          <button 
+            className="chip" 
+            onClick={() => applyPreset({ specular: 0.4, shininess: 32, reflectivity: 0.1 })}
+            disabled={disabled}
+          >
+            Plastic
+          </button>
+          <button 
+            className="chip" 
+            onClick={() => applyPreset({ specular: 0.6, shininess: 64, reflectivity: 0.3 })}
+            disabled={disabled}
+          >
+            Glossy
+          </button>
+          <button 
+            className="chip" 
+            onClick={() => applyPreset({ specular: 0.9, shininess: 128, reflectivity: 0.7 })}
+            disabled={disabled}
+          >
+            Metal
+          </button>
+          <button 
+            className="chip chip-accent" 
+            onClick={() => applyPreset({ specular: 1.0, shininess: 256, reflectivity: 0.95 })}
+            disabled={disabled}
+          >
+            Mirror
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
 export default MaterialControls;
-
