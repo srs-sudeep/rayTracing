@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Local planning files
+TODO.md
+
 # Build outputs
 dist/
 
