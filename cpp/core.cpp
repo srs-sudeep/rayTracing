@@ -64,6 +64,10 @@ void updateMaterial(float specular, float shininess, float reflectivity) {
     globalScene.updateMainSphere(specular, shininess, reflectivity);
 }
 
+void updateSphereColor(float r, float g, float b) {
+    globalScene.updateSphereColor(r, g, b);
+}
+
 void updateGroundReflectivity(float reflectivity) {
     globalScene.updateGroundReflectivity(reflectivity);
 }
@@ -125,6 +129,7 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     
     // Material
     emscripten::function("updateMaterial", &updateMaterial);
+    emscripten::function("updateSphereColor", &updateSphereColor);
     emscripten::function("updateGroundReflectivity", &updateGroundReflectivity);
     
     // Camera

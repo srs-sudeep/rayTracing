@@ -98,6 +98,47 @@
   gap: var(--space-sm);
 }
 
+.group-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+/* Color Grid */
+.color-grid {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.color-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+}
+
+.color-btn.active {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--accent-primary);
+}
+
+.color-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Scene Presets */
 .scene-presets {
   display: flex;
@@ -190,6 +231,48 @@
 .size-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Resolution Grid */
+.resolution-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.res-btn {
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.res-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.res-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+}
+
+.res-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resolution-note {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin: 0;
+  text-align: center;
 }
 
 /* Action Buttons */

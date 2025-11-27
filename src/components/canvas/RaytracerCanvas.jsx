@@ -14,26 +14,33 @@ function RaytracerCanvas({
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [canvasSize, setCanvasSize] = useState(600);
+  const [displaySize, setDisplaySize] = useState({ width: 700, height: 700 });
   const lastMousePos = useRef({ x: 0, y: 0 });
   const renderRequestRef = useRef(null);
   const lastPresetRef = useRef(scenePreset);
 
-  // Calculate canvas size based on container
+  // Calculate display size to fill container while maintaining square aspect
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        // Use the smaller dimension, with some padding
-        const maxSize = Math.min(rect.width - 40, rect.height - 80);
-        const size = Math.max(400, Math.min(800, maxSize));
-        setCanvasSize(size);
+        // Fill as much as possible while staying square
+        const maxSize = Math.min(rect.width - 20, rect.height - 20);
+        const size = Math.max(300, maxSize);
+        setDisplaySize({ width: size, height: size });
       }
     };
 
     updateSize();
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    
+    // Also update after a short delay to catch layout shifts
+    const timeout = setTimeout(updateSize, 100);
+    
+    return () => {
+      window.removeEventListener('resize', updateSize);
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Optimized render function
@@ -53,6 +60,7 @@ function RaytracerCanvas({
     // Update C++ state
     wasmModule.updateLight(light.x, light.y, light.z);
     wasmModule.updateMaterial(material.specular, material.shininess, material.reflectivity);
+    wasmModule.updateSphereColor(material.color.r, material.color.g, material.color.b);
     wasmModule.updateCamera(camera.x, camera.y, camera.z);
     wasmModule.setShowGroundPlane(view.showGroundPlane);
     wasmModule.setShowGrid(view.showGrid);
@@ -141,25 +149,26 @@ function RaytracerCanvas({
 
   return (
     <div className="canvas-container" ref={containerRef}>
-      <div className="canvas-wrapper" style={{ width: canvasSize, height: canvasSize }}>
-        <canvas
-          ref={canvasRef}
-          width={view.resolution}
-          height={view.resolution}
-          className={`raytracer-canvas ${isDragging ? 'dragging' : ''}`}
-          style={{ width: canvasSize, height: canvasSize }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onWheel={handleWheel}
-        />
-        <div className="canvas-badge top-left">
-          {view.resolution}×{view.resolution}
-        </div>
-        <div className="canvas-badge bottom-right">
-          🖱️ Drag to orbit • ⚙️ Scroll to zoom
-        </div>
+      <canvas
+        ref={canvasRef}
+        width={view.resolution}
+        height={view.resolution}
+        className={`raytracer-canvas ${isDragging ? 'dragging' : ''}`}
+        style={{ 
+          width: displaySize.width, 
+          height: displaySize.height 
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
+      />
+      <div className="canvas-badge top-left">
+        {view.resolution}×{view.resolution}
+      </div>
+      <div className="canvas-badge bottom-right">
+        Drag to orbit • Scroll to zoom
       </div>
     </div>
   );

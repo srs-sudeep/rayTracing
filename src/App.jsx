@@ -15,7 +15,12 @@ function App() {
   const [scenePreset, setScenePreset] = useState(0);
   const [sphereCount, setSphereCount] = useState(1);
   const [light, setLight] = useState({ x: 2, y: 3, z: -2 });
-  const [material, setMaterial] = useState({ specular: 0.5, shininess: 32, reflectivity: 0.3 });
+  const [material, setMaterial] = useState({ 
+    color: { r: 0.9, g: 0.2, b: 0.15 },
+    specular: 0.5, 
+    shininess: 32, 
+    reflectivity: 0.3 
+  });
   const [camera, setCamera] = useState({ ...DEFAULT_CAMERA });
   const [view, setView] = useState({ 
     showGroundPlane: true,

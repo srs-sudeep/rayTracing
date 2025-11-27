@@ -3,15 +3,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-md);
-  min-height: 500px;
-}
-
-.canvas-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .raytracer-canvas {
@@ -19,11 +13,10 @@
   border-radius: var(--radius-lg);
   box-shadow: 
     var(--shadow-lg),
-    0 0 80px rgba(232, 93, 76, 0.08),
-    inset 0 0 0 1px var(--border-accent);
+    0 0 80px rgba(232, 93, 76, 0.08);
   background: var(--bg-tertiary);
   cursor: grab;
-  /* Smooth scaling for non-native resolutions */
+  /* Smooth scaling */
   image-rendering: auto;
 }
 
@@ -34,23 +27,35 @@
 .canvas-badge {
   position: absolute;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--text-muted);
-  background: rgba(0, 0, 0, 0.7);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  padding: 0.25em 0.6em;
+  padding: 4px 8px;
   border-radius: var(--radius-sm);
   pointer-events: none;
-  white-space: nowrap;
 }
 
 .canvas-badge.top-left {
-  top: var(--space-sm);
-  left: var(--space-sm);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateY(-300px) translateX(-200px);
 }
 
 .canvas-badge.bottom-right {
-  bottom: var(--space-sm);
-  right: var(--space-sm);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateY(300px);
   font-family: var(--font-sans);
+  font-size: 0.7rem;
+}
+
+/* Position badges relative to canvas center */
+@media (max-height: 700px) {
+  .canvas-badge.top-left {
+    transform: translate(-50%, -50%) translateY(-200px) translateX(-150px);
+  }
+  .canvas-badge.bottom-right {
+    transform: translate(-50%, -50%) translateY(200px);
+  }
 }

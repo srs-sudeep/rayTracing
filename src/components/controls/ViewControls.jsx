@@ -76,33 +76,23 @@ function ViewControls({ view, onChange, disabled }) {
       <div className="control-divider" />
 
       <div className="control-group">
-        <div className="control-row">
-          <span className="info-label">Resolution</span>
-          <div className="button-group">
-            {[256, 512, 1024].map((res) => (
-              <button
-                key={res}
-                className={`size-btn ${view.resolution === res ? 'active' : ''}`}
-                onClick={() => handleChange('resolution', res)}
-                disabled={disabled}
-              >
-                {res}
-              </button>
-            ))}
-          </div>
+        <span className="group-label">Render Resolution</span>
+        <div className="resolution-grid">
+          {[256, 512, 768, 1024].map((res) => (
+            <button
+              key={res}
+              className={`res-btn ${view.resolution === res ? 'active' : ''}`}
+              onClick={() => handleChange('resolution', res)}
+              disabled={disabled}
+            >
+              {res}
+            </button>
+          ))}
         </div>
+        <p className="resolution-note">
+          Higher = better quality, slower render
+        </p>
       </div>
-
-      <div className="control-info">
-        <span className="info-label">Pixels</span>
-        <code className="info-value">
-          {(view.resolution * view.resolution).toLocaleString()}
-        </code>
-      </div>
-
-      <p className="control-hint">
-        🪞 Higher bounces = more reflections
-      </p>
     </div>
   );
 }

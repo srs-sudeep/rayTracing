@@ -255,6 +255,12 @@ public:
         }
     }
 
+    void updateSphereColor(float r, float g, float b) {
+        if (!spheres.empty()) {
+            spheres[0].material.color = Vec3(r, g, b);
+        }
+    }
+
     void updateGroundReflectivity(float reflectivity) {
         groundPlane.material.reflectivity = reflectivity;
     }
