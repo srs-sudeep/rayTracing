@@ -15,8 +15,9 @@ function App() {
   const [material, setMaterial] = useState({ specular: 0.5, shininess: 32 });
   const [camera, setCamera] = useState({ ...DEFAULT_CAMERA });
   const [view, setView] = useState({ 
+    showGroundPlane: true,
     showGrid: true, 
-    gridSize: 64,
+    gridScale: 1.0,
     resolution: 512 
   });
   const [renderTime, setRenderTime] = useState(0);
@@ -83,9 +84,10 @@ function App() {
           <div className="scene-info">
             <h3>Scene</h3>
             <ul>
-              <li><span>Objects</span><span>1 Sphere</span></li>
+              <li><span>Objects</span><span>1 Sphere + Ground</span></li>
               <li><span>Lights</span><span>1 Point</span></li>
               <li><span>Shader</span><span>Blinn-Phong</span></li>
+              <li><span>Shadows</span><span>Hard</span></li>
             </ul>
           </div>
         </aside>

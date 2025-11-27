@@ -11,25 +11,33 @@ function ViewControls({ view, onChange, disabled }) {
     <div className="control-section">
       <div className="control-group">
         <Toggle
-          id="show-grid"
-          label="Show Grid"
-          checked={view.showGrid}
-          onChange={(v) => handleChange('showGrid', v)}
+          id="show-ground"
+          label="Ground Plane"
+          checked={view.showGroundPlane}
+          onChange={(v) => handleChange('showGroundPlane', v)}
           disabled={disabled}
         />
         
-        {view.showGrid && (
+        <Toggle
+          id="show-grid"
+          label="Grid Lines"
+          checked={view.showGrid}
+          onChange={(v) => handleChange('showGrid', v)}
+          disabled={disabled || !view.showGroundPlane}
+        />
+        
+        {view.showGrid && view.showGroundPlane && (
           <Slider
-            id="grid-size"
-            label="Grid Size"
-            value={view.gridSize}
-            min={16}
-            max={128}
-            step={16}
+            id="grid-scale"
+            label="Grid Scale"
+            value={view.gridScale}
+            min={0.5}
+            max={4}
+            step={0.5}
             color="#94a3b8"
-            onChange={(v) => handleChange('gridSize', v)}
+            onChange={(v) => handleChange('gridScale', v)}
             disabled={disabled}
-            formatValue={(v) => `${v}px`}
+            formatValue={(v) => `${v.toFixed(1)}x`}
           />
         )}
       </div>
@@ -60,9 +68,12 @@ function ViewControls({ view, onChange, disabled }) {
           {(view.resolution * view.resolution).toLocaleString()}
         </code>
       </div>
+
+      <p className="control-hint">
+        🎨 Grid shows X (red) and Z (teal) axes
+      </p>
     </div>
   );
 }
 
 export default ViewControls;
-

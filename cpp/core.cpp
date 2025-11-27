@@ -15,6 +15,7 @@
 #include "include/Light.h"
 #include "include/Camera.h"
 #include "include/Sphere.h"
+#include "include/Plane.h"
 #include "include/Scene.h"
 #include "include/Renderer.h"
 
@@ -26,7 +27,7 @@ Scene globalScene;
 Renderer globalRenderer;
 
 // ============================================================================
-// API Functions (Called from JavaScript)
+// Render API
 // ============================================================================
 
 std::vector<uint8_t> render(int width, int height) {
@@ -35,13 +36,25 @@ std::vector<uint8_t> render(int width, int height) {
     return globalRenderer.render(globalScene);
 }
 
+// ============================================================================
+// Light API
+// ============================================================================
+
 void updateLight(float x, float y, float z) {
     globalScene.updateLight(x, y, z);
 }
 
+// ============================================================================
+// Material API
+// ============================================================================
+
 void updateMaterial(float specular, float shininess) {
     globalScene.updateMainSphere(specular, shininess);
 }
+
+// ============================================================================
+// Camera API
+// ============================================================================
 
 void updateCamera(float posX, float posY, float posZ) {
     globalScene.updateCamera(posX, posY, posZ);
@@ -55,34 +68,41 @@ void zoomCamera(float delta) {
     globalScene.zoomCamera(delta);
 }
 
-void setShowGrid(bool show) {
-    globalRenderer.showGrid = show;
-}
-
-void setGridSize(int size) {
-    globalRenderer.gridSize = size;
-}
-
-// Get camera position for UI sync
 float getCameraX() { return globalScene.camera.position.x; }
 float getCameraY() { return globalScene.camera.position.y; }
 float getCameraZ() { return globalScene.camera.position.z; }
+
+// ============================================================================
+// View API
+// ============================================================================
+
+void setShowGrid(bool show) {
+    globalScene.setShowGrid(show);
+}
+
+void setGridScale(float scale) {
+    globalScene.setGridScale(scale);
+}
+
+void setShowGroundPlane(bool show) {
+    globalScene.setShowGroundPlane(show);
+}
 
 // ============================================================================
 // Emscripten Bindings
 // ============================================================================
 
 EMSCRIPTEN_BINDINGS(raytracer_module) {
-    // Core render function
+    // Render
     emscripten::function("render", &render);
     
-    // Light controls
+    // Light
     emscripten::function("updateLight", &updateLight);
     
-    // Material controls
+    // Material
     emscripten::function("updateMaterial", &updateMaterial);
     
-    // Camera controls
+    // Camera
     emscripten::function("updateCamera", &updateCamera);
     emscripten::function("orbitCamera", &orbitCamera);
     emscripten::function("zoomCamera", &zoomCamera);
@@ -90,10 +110,11 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     emscripten::function("getCameraY", &getCameraY);
     emscripten::function("getCameraZ", &getCameraZ);
     
-    // Grid controls
+    // View
     emscripten::function("setShowGrid", &setShowGrid);
-    emscripten::function("setGridSize", &setGridSize);
+    emscripten::function("setGridScale", &setGridScale);
+    emscripten::function("setShowGroundPlane", &setShowGroundPlane);
     
-    // Vector type for return values
+    // Vector type
     emscripten::register_vector<uint8_t>("VectorUint8");
 }

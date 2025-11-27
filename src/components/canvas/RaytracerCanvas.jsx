@@ -25,8 +25,9 @@ function RaytracerCanvas({
     wasmModule.updateLight(light.x, light.y, light.z);
     wasmModule.updateMaterial(material.specular, material.shininess);
     wasmModule.updateCamera(camera.x, camera.y, camera.z);
+    wasmModule.setShowGroundPlane(view.showGroundPlane);
     wasmModule.setShowGrid(view.showGrid);
-    wasmModule.setGridSize(view.gridSize);
+    wasmModule.setGridScale(view.gridScale);
 
     // Time the render
     const startTime = performance.now();
@@ -116,9 +117,12 @@ function RaytracerCanvas({
       <div className="canvas-overlay">
         <span className="resolution-badge">{view.resolution}×{view.resolution}</span>
       </div>
+      <div className="canvas-hint">
+        <span>🖱️ Drag to orbit</span>
+        <span>⚙️ Scroll to zoom</span>
+      </div>
     </div>
   );
 }
 
 export default RaytracerCanvas;
-

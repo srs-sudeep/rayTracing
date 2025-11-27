@@ -42,3 +42,21 @@
   letter-spacing: 0.05em;
 }
 
+.canvas-hint {
+  position: absolute;
+  bottom: var(--space-sm);
+  left: var(--space-sm);
+  display: flex;
+  gap: var(--space-sm);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.canvas-hint span {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  padding: 0.2em 0.5em;
+  border-radius: var(--radius-sm);
+}
+

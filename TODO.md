@@ -27,10 +27,14 @@ A progressive enhancement plan for the ray tracer, organized by commits.
 - [x] Material presets (Matte, Plastic, Glossy, Metal)
 - [x] Performance stats (render time, MP/s, FPS)
 
-### 🔲 Commit 2: Ground Plane
-- [ ] Add infinite plane intersection
-- [ ] Checkerboard procedural texture
-- [ ] Plane receives shadows from sphere
+### ✅ Commit 2: Ground Plane
+- [x] Add infinite plane intersection
+- [x] Blender-style 3D grid with perspective
+- [x] X-axis (red) and Z-axis (teal) center lines
+- [x] Major/minor grid lines with distance fade
+- [x] Plane receives shadows from sphere
+- [x] Grid scale control
+- [x] Toggle ground plane and grid independently
 
 ### 🔲 Commit 3: Reflections
 - [ ] Recursive ray tracing (max depth)
@@ -147,7 +151,7 @@ A progressive enhancement plan for the ray tracer, organized by commits.
 
 | Phase | Commits | Status |
 |-------|---------|--------|
-| Phase 1: Core | 0-4 | 🟡 In Progress (1/4 complete) |
+| Phase 1: Core | 0-4 | 🟡 In Progress (2/4 complete) |
 | Phase 2: Lighting | 5-8 | ⚪ Not Started |
 | Phase 3: Materials | 9-10 | ⚪ Not Started |
 | Phase 4: Scene | 11-12 | ⚪ Not Started |
