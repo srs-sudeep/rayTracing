@@ -34,6 +34,7 @@ mkdir -p "$OUTPUT_DIR"
 
 # Compile with Emscripten
 emcc "$INPUT_FILE" \
+    -I"$SCRIPT_DIR/include" \
     -O3 \
     -s WASM=1 \
     -s MODULARIZE=1 \

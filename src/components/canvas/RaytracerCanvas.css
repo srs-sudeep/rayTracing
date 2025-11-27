@@ -1,0 +1,44 @@
+.canvas-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.raytracer-canvas {
+  display: block;
+  border-radius: var(--radius-lg);
+  box-shadow: 
+    var(--shadow-lg),
+    0 0 60px rgba(232, 93, 76, 0.1),
+    inset 0 0 0 1px var(--border-accent);
+  background: var(--bg-tertiary);
+  cursor: grab;
+  max-width: 100%;
+  height: auto;
+  /* Crisp pixel rendering */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.raytracer-canvas.dragging {
+  cursor: grabbing;
+}
+
+.canvas-overlay {
+  position: absolute;
+  bottom: var(--space-sm);
+  right: var(--space-sm);
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.resolution-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 0.2em 0.5em;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.05em;
+}
+

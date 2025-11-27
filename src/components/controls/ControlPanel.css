@@ -1,0 +1,14 @@
+.control-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.control-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
