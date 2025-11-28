@@ -54,3 +54,9 @@ RayTracer Studio is an educational and interactive ray tracing application that 
 - [Architecture](./architecture) - Understand the system design
 - [C++ Engine](./cpp-engine/overview) - Deep dive into the ray tracer
 - [React Frontend](./react-frontend/overview) - Explore the UI components
+
+---
+
+:::tip Made with ❤️
+This project was created by **[SRS](https://github.com/srs-sudeep)** as an educational exploration of ray tracing and WebAssembly.
+:::

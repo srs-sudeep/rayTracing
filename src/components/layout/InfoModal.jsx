@@ -88,7 +88,15 @@ function InfoModal({ onClose }) {
 
         <div className="modal-footer">
           <p>
-            Built with ❤️ using C++, WebAssembly, and React
+            Made with ❤️ by{' '}
+            <a 
+              href="https://github.com/srs-sudeep" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="author-link"
+            >
+              SRS
+            </a>
           </p>
         </div>
       </div>

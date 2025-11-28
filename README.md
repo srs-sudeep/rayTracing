@@ -1,6 +1,8 @@
-# RayTracerStudio
+# RayTracer Studio
 
 A real-time CPU-based ray tracer running in the browser via WebAssembly. Built with C++, Emscripten, and React.
+
+🔗 **[Live Demo](https://ray-tracing.vercel.app/)** | **[Documentation](https://ray-tracing.vercel.app/docs)**
 
 ![RayTracerStudio](https://via.placeholder.com/800x400/0a0a0c/e85d4c?text=RayTracerStudio)
 
@@ -106,4 +108,10 @@ The C++ code is compiled to WebAssembly using Emscripten's `embind`:
 ## License
 
 MIT
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/srs-sudeep">SRS</a>
+</p>
 

@@ -101,8 +101,17 @@ const config: Config = {
             },
           ],
         },
+        {
+          title: 'Connect',
+          items: [
+            {
+              label: 'GitHub Profile',
+              href: 'https://github.com/srs-sudeep',
+            },
+          ],
+        },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} RayTracer Studio. Built with Docusaurus.`,
+      copyright: `Made with ❤️ by <a href="https://github.com/srs-sudeep" target="_blank" rel="noopener noreferrer">SRS</a> | © ${new Date().getFullYear()} RayTracer Studio`,
     },
     prism: {
       theme: prismThemes.github,

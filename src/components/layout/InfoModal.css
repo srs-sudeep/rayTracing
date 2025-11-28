@@ -167,6 +167,18 @@
   margin: 0;
 }
 
+.author-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.author-link:hover {
+  color: var(--accent-secondary);
+  text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .tech-grid {
