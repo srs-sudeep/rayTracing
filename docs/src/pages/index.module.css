@@ -1,0 +1,263 @@
+/* Hero Section */
+.heroBanner {
+  padding: 6rem 0;
+  background: linear-gradient(135deg, #0f0f12 0%, #1a1a1e 50%, #0f0f12 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.heroBanner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(232, 93, 76, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.heroContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.heroText {
+  flex: 1;
+  max-width: 600px;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #f4f4f5;
+}
+
+.highlight {
+  background: linear-gradient(135deg, #e85d4c, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: #a1a1aa;
+  margin-bottom: 2rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.buttons .button--secondary {
+  background: #e85d4c;
+  border-color: #e85d4c;
+  color: white;
+}
+
+.buttons .button--secondary:hover {
+  background: #d44a39;
+  border-color: #d44a39;
+}
+
+.buttons .button--outline {
+  color: #f4f4f5;
+  border-color: #3f3f46;
+}
+
+.buttons .button--outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #52525b;
+}
+
+/* Hero Image/Animation */
+.heroImage {
+  flex-shrink: 0;
+}
+
+.sphereDemo {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.sphere {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle at 30% 30%, #fff 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, #e85d4c 0%, #c94a3a 100%);
+  box-shadow: 
+    inset -20px -20px 40px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(232, 93, 76, 0.3);
+  animation: float 4s ease-in-out infinite;
+  position: absolute;
+  top: 10px;
+  left: 25px;
+}
+
+.shadow {
+  width: 120px;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  animation: shadowPulse 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes shadowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(0.9); opacity: 0.3; }
+}
+
+/* Features Section */
+.features {
+  padding: 5rem 0;
+  background: #09090b;
+}
+
+.featuresTitle {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  color: #f4f4f5;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.feature {
+  background: #0f0f12;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.feature:hover {
+  transform: translateY(-4px);
+  border-color: #3f3f46;
+}
+
+.featureIcon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.feature h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #f4f4f5;
+}
+
+.feature p {
+  color: #a1a1aa;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Tech Stack Section */
+.techStack {
+  padding: 5rem 0;
+  background: #0a0a0c;
+  border-top: 1px solid #27272a;
+}
+
+.techGrid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.techCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  background: #0f0f12;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  min-width: 140px;
+  transition: transform 0.2s;
+}
+
+.techCard:hover {
+  transform: translateY(-2px);
+}
+
+.techIcon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.techCard strong {
+  color: #f4f4f5;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.techCard span:last-child {
+  color: #71717a;
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 996px) {
+  .heroContent {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .buttons {
+    justify-content: center;
+  }
+  
+  .heroImage {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroBanner {
+    padding: 4rem 0;
+  }
+  
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .buttons {
+    flex-direction: column;
+  }
+  
+  .buttons .button {
+    width: 100%;
+  }
+}

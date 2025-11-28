@@ -1,0 +1,9 @@
+{
+  "label": "C++ Engine",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Deep dive into the C++ ray tracing engine - from vector math to the complete rendering pipeline."
+  }
+}
+

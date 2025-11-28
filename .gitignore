@@ -1,5 +1,10 @@
 # Dependencies
 node_modules/
+docs/node_modules/
+
+# Documentation build
+docs/build/
+docs/.docusaurus/
 
 # Local planning files
 TODO.md
