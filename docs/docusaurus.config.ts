@@ -2,9 +2,6 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// Simple inline SVG as data URI for the logo (works in all environments)
-const logoSvg = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23e85d4c"/><stop offset="100%" style="stop-color:%23c94a3a"/></linearGradient></defs><circle cx="32" cy="32" r="24" fill="url(%23sg)"/><ellipse cx="24" cy="24" rx="6" ry="4" fill="white" opacity="0.4"/></svg>`)}`;
-
 const config: Config = {
   title: 'RayTracer Studio',
   tagline: 'Real-time CPU Ray Tracing in the Browser',
@@ -47,7 +44,7 @@ const config: Config = {
       title: 'RayTracer Studio',
       logo: {
         alt: 'RayTracer Studio Logo',
-        src: logoSvg,
+        src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJzZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2U4NWQ0YyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2M5NGEzYSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxjaXJjbGUgY3g9IjMyIiBjeT0iMzIiIHI9IjI0IiBmaWxsPSJ1cmwoI3NnKSIvPjxlbGxpcHNlIGN4PSIyNCIgY3k9IjI0IiByeD0iNiIgcnk9IjQiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjQiLz48L3N2Zz4=',
         href: '/',
         width: 32,
         height: 32,
