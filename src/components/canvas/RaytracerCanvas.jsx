@@ -3,7 +3,7 @@ import './RaytracerCanvas.css';
 
 function RaytracerCanvas({ 
   wasmModule, 
-  light, 
+  lights, 
   material, 
   camera,
   view,
@@ -54,8 +54,14 @@ function RaytracerCanvas({
       lastPresetRef.current = scenePreset;
     }
 
-    // Update C++ state
-    wasmModule.updateLight(light.x, light.y, light.z);
+    // Update all lights
+    lights.forEach((light, index) => {
+      wasmModule.setLightPosition(index, light.x, light.y, light.z);
+      wasmModule.setLightColor(index, light.color.r, light.color.g, light.color.b);
+      wasmModule.setLightIntensity(index, light.intensity);
+    });
+
+    // Material updates
     wasmModule.updateMaterial(material.specular, material.shininess, material.reflectivity);
     wasmModule.updateSphereColor(material.color.r, material.color.g, material.color.b);
     
@@ -94,7 +100,7 @@ function RaytracerCanvas({
     }
     
     ctx.putImageData(imageData, 0, 0);
-  }, [wasmModule, light, material, camera, view, scenePreset, onRenderTime]);
+  }, [wasmModule, lights, material, camera, view, scenePreset, onRenderTime]);
 
   // Debounced render
   useEffect(() => {
@@ -175,7 +181,7 @@ function RaytracerCanvas({
         onWheel={handleWheel}
       />
       <div className="canvas-badge top-left">
-        {view.resolution}×{view.resolution} • FOV {camera.fov}°
+        {view.resolution}×{view.resolution} • {lights.length} light{lights.length > 1 ? 's' : ''}
       </div>
       <div className="canvas-badge bottom-right">
         Drag to orbit • Scroll to zoom

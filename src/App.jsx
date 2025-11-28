@@ -12,13 +12,19 @@ const DEFAULT_CAMERA = {
   fov: 60
 };
 
+const DEFAULT_LIGHT = {
+  x: 2, y: 3, z: -2,
+  color: { r: 1.0, g: 1.0, b: 1.0 },
+  intensity: 1.0
+};
+
 function App() {
   const { wasmModule, loading, error } = useWasm();
   
   // Scene state
   const [scenePreset, setScenePreset] = useState(0);
   const [sphereCount, setSphereCount] = useState(1);
-  const [light, setLight] = useState({ x: 2, y: 3, z: -2 });
+  const [lights, setLights] = useState([{ ...DEFAULT_LIGHT }]);
   const [material, setMaterial] = useState({ 
     color: { r: 0.9, g: 0.2, b: 0.15 },
     specular: 0.5, 
@@ -69,6 +75,52 @@ function App() {
     }
   };
 
+  // Add a new light
+  const handleAddLight = useCallback(() => {
+    if (lights.length >= 4) return;
+    
+    // New lights at different positions
+    const positions = [
+      { x: 2, y: 3, z: -2 },
+      { x: -3, y: 2, z: -1 },
+      { x: 0, y: 4, z: 2 },
+      { x: 3, y: 1, z: 1 }
+    ];
+    const colors = [
+      { r: 1.0, g: 1.0, b: 1.0 },
+      { r: 1.0, g: 0.8, b: 0.6 },
+      { r: 0.6, g: 0.8, b: 1.0 },
+      { r: 1.0, g: 0.9, b: 0.7 }
+    ];
+    
+    const newLight = {
+      ...positions[lights.length % positions.length],
+      color: colors[lights.length % colors.length],
+      intensity: 0.8
+    };
+    
+    setLights(prev => [...prev, newLight]);
+    
+    if (wasmModule) {
+      wasmModule.addLight(
+        newLight.x, newLight.y, newLight.z,
+        newLight.color.r, newLight.color.g, newLight.color.b,
+        newLight.intensity
+      );
+    }
+  }, [lights.length, wasmModule]);
+
+  // Remove a light
+  const handleRemoveLight = useCallback((index) => {
+    if (lights.length <= 1) return;
+    
+    setLights(prev => prev.filter((_, i) => i !== index));
+    
+    if (wasmModule) {
+      wasmModule.removeLight(index);
+    }
+  }, [lights.length, wasmModule]);
+
   const isDisabled = loading || !!error;
 
   return (
@@ -105,7 +157,7 @@ function App() {
             {!loading && !error && wasmModule && (
               <RaytracerCanvas
                 wasmModule={wasmModule}
-                light={light}
+                lights={lights}
                 material={material}
                 camera={camera}
                 view={view}
@@ -119,8 +171,10 @@ function App() {
 
         <aside className="sidebar">
           <ControlPanel
-            light={light}
-            onLightChange={setLight}
+            lights={lights}
+            onLightsChange={setLights}
+            onAddLight={handleAddLight}
+            onRemoveLight={handleRemoveLight}
             material={material}
             onMaterialChange={setMaterial}
             camera={camera}
@@ -129,13 +183,14 @@ function App() {
             view={view}
             onViewChange={setView}
             disabled={isDisabled}
+            wasmModule={wasmModule}
           />
 
           <div className="scene-info">
             <h3>Render Info</h3>
             <ul>
               <li><span>Objects</span><span>{sphereCount} + Ground</span></li>
-              <li><span>Lights</span><span>1 Point</span></li>
+              <li><span>Lights</span><span>{lights.length} Point{lights.length > 1 ? 's' : ''}</span></li>
               <li><span>Bounces</span><span>{view.maxBounces}</span></li>
             </ul>
           </div>
@@ -143,7 +198,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <span>RayTracerStudio</span>
+        <span>RayTracer Studio</span>
         <span className="footer-sep">•</span>
         <span>C++ / WebAssembly / React</span>
       </footer>

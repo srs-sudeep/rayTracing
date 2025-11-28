@@ -12,6 +12,9 @@ TODO.md
 # Build outputs
 dist/
 
+#Blog
+BLOG_POST.md
+
 # Compiled WASM files - tracked for deployment
 # src/wasm/  # Uncomment to ignore locally
 

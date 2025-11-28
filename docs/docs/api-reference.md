@@ -59,9 +59,96 @@ function getSphereCount(): number
 
 ## Light
 
-### `updateLight(x, y, z)`
+RayTracer Studio supports **multiple colored lights** (up to 4).
 
-Sets the light position.
+### `addLight(x, y, z, r, g, b, intensity)`
+
+Adds a new light to the scene.
+
+```typescript
+function addLight(
+  x: number, y: number, z: number,  // Position
+  r: number, g: number, b: number,  // Color (0-1)
+  intensity: number                  // Brightness (0-2)
+): number  // Returns the new light's index
+```
+
+### `removeLight(index)`
+
+Removes a light by its index.
+
+```typescript
+function removeLight(index: number): void
+```
+
+:::warning
+Cannot remove the last light. At least one light must remain.
+:::
+
+### `setLightPosition(index, x, y, z)`
+
+Updates a specific light's position.
+
+```typescript
+function setLightPosition(
+  index: number,
+  x: number, y: number, z: number
+): void
+```
+
+### `setLightColor(index, r, g, b)`
+
+Updates a specific light's color.
+
+```typescript
+function setLightColor(
+  index: number,
+  r: number, g: number, b: number  // 0.0 - 1.0
+): void
+```
+
+### `setLightIntensity(index, intensity)`
+
+Updates a specific light's brightness.
+
+```typescript
+function setLightIntensity(
+  index: number,
+  intensity: number  // 0.0 - 2.0
+): void
+```
+
+### `getLightCount()`
+
+Returns the number of lights in the scene.
+
+```typescript
+function getLightCount(): number
+```
+
+### Light Property Getters
+
+```typescript
+function getLightX(index: number): number
+function getLightY(index: number): number
+function getLightZ(index: number): number
+function getLightR(index: number): number
+function getLightG(index: number): number
+function getLightB(index: number): number
+function getLightIntensity(index: number): number
+```
+
+### `resetLights()`
+
+Resets to a single default white light.
+
+```typescript
+function resetLights(): void
+```
+
+### `updateLight(x, y, z)` *(Legacy)*
+
+Updates the first light's position only.
 
 ```typescript
 function updateLight(x: number, y: number, z: number): void

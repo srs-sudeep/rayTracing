@@ -7,15 +7,17 @@ import ViewControls from './ViewControls';
 import './ControlPanel.css';
 
 const TABS = [
-  { id: 'light', label: 'Light', icon: '☀' },
+  { id: 'light', label: 'Lights', icon: '☀' },
   { id: 'material', label: 'Material', icon: '◆' },
   { id: 'camera', label: 'Camera', icon: '📷' },
   { id: 'view', label: 'View', icon: '⊞' },
 ];
 
 function ControlPanel({ 
-  light, 
-  onLightChange,
+  lights,
+  onLightsChange,
+  onAddLight,
+  onRemoveLight,
   material,
   onMaterialChange,
   camera,
@@ -23,7 +25,8 @@ function ControlPanel({
   onCameraReset,
   view,
   onViewChange,
-  disabled 
+  disabled,
+  wasmModule
 }) {
   const [activeTab, setActiveTab] = useState('light');
 
@@ -32,9 +35,12 @@ function ControlPanel({
       case 'light':
         return (
           <LightControls 
-            light={light} 
-            onChange={onLightChange} 
-            disabled={disabled} 
+            lights={lights}
+            onChange={onLightsChange}
+            onAddLight={onAddLight}
+            onRemoveLight={onRemoveLight}
+            disabled={disabled}
+            wasmModule={wasmModule}
           />
         );
       case 'material':

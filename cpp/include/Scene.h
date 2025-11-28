@@ -265,10 +265,82 @@ public:
         groundPlane.material.reflectivity = reflectivity;
     }
 
+    // ========================================
+    // Light Management
+    // ========================================
+    
     void updateLight(float x, float y, float z) {
         if (!lights.empty()) {
             lights[0].position = Vec3(x, y, z);
         }
+    }
+
+    // Add a new light to the scene
+    int addLight(float x, float y, float z, float r, float g, float b, float intensity) {
+        lights.push_back(Light(Vec3(x, y, z), Vec3(r, g, b), intensity));
+        return static_cast<int>(lights.size() - 1);
+    }
+
+    // Remove a light by index
+    void removeLight(int index) {
+        if (index >= 0 && index < static_cast<int>(lights.size()) && lights.size() > 1) {
+            lights.erase(lights.begin() + index);
+        }
+    }
+
+    // Update a specific light's position
+    void setLightPosition(int index, float x, float y, float z) {
+        if (index >= 0 && index < static_cast<int>(lights.size())) {
+            lights[index].position = Vec3(x, y, z);
+        }
+    }
+
+    // Update a specific light's color
+    void setLightColor(int index, float r, float g, float b) {
+        if (index >= 0 && index < static_cast<int>(lights.size())) {
+            lights[index].color = Vec3(r, g, b);
+        }
+    }
+
+    // Update a specific light's intensity
+    void setLightIntensity(int index, float intensity) {
+        if (index >= 0 && index < static_cast<int>(lights.size())) {
+            lights[index].intensity = std::fmax(0.0f, std::fmin(2.0f, intensity));
+        }
+    }
+
+    // Get light count
+    int getLightCount() const {
+        return static_cast<int>(lights.size());
+    }
+
+    // Get light properties
+    float getLightX(int index) const { 
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].position.x : 0.0f; 
+    }
+    float getLightY(int index) const { 
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].position.y : 0.0f; 
+    }
+    float getLightZ(int index) const { 
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].position.z : 0.0f; 
+    }
+    float getLightR(int index) const { 
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].color.x : 1.0f; 
+    }
+    float getLightG(int index) const { 
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].color.y : 1.0f; 
+    }
+    float getLightB(int index) const { 
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].color.z : 1.0f; 
+    }
+    float getLightIntensity(int index) const { 
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].intensity : 1.0f; 
+    }
+
+    // Reset to single default light
+    void resetLights() {
+        lights.clear();
+        lights.push_back(Light(Vec3(2.0f, 3.0f, -2.0f), Vec3(1.0f, 1.0f, 1.0f), 1.0f));
     }
 
     void updateCamera(float posX, float posY, float posZ) {

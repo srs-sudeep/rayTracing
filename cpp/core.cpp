@@ -56,6 +56,42 @@ void updateLight(float x, float y, float z) {
     globalScene.updateLight(x, y, z);
 }
 
+int addLight(float x, float y, float z, float r, float g, float b, float intensity) {
+    return globalScene.addLight(x, y, z, r, g, b, intensity);
+}
+
+void removeLight(int index) {
+    globalScene.removeLight(index);
+}
+
+void setLightPosition(int index, float x, float y, float z) {
+    globalScene.setLightPosition(index, x, y, z);
+}
+
+void setLightColor(int index, float r, float g, float b) {
+    globalScene.setLightColor(index, r, g, b);
+}
+
+void setLightIntensity(int index, float intensity) {
+    globalScene.setLightIntensity(index, intensity);
+}
+
+int getLightCount() {
+    return globalScene.getLightCount();
+}
+
+float getLightX(int index) { return globalScene.getLightX(index); }
+float getLightY(int index) { return globalScene.getLightY(index); }
+float getLightZ(int index) { return globalScene.getLightZ(index); }
+float getLightR(int index) { return globalScene.getLightR(index); }
+float getLightG(int index) { return globalScene.getLightG(index); }
+float getLightB(int index) { return globalScene.getLightB(index); }
+float getLightIntensity(int index) { return globalScene.getLightIntensity(index); }
+
+void resetLights() {
+    globalScene.resetLights();
+}
+
 // ============================================================================
 // Material API
 // ============================================================================
@@ -139,6 +175,20 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     
     // Light
     emscripten::function("updateLight", &updateLight);
+    emscripten::function("addLight", &addLight);
+    emscripten::function("removeLight", &removeLight);
+    emscripten::function("setLightPosition", &setLightPosition);
+    emscripten::function("setLightColor", &setLightColor);
+    emscripten::function("setLightIntensity", &setLightIntensity);
+    emscripten::function("getLightCount", &getLightCount);
+    emscripten::function("getLightX", &getLightX);
+    emscripten::function("getLightY", &getLightY);
+    emscripten::function("getLightZ", &getLightZ);
+    emscripten::function("getLightR", &getLightR);
+    emscripten::function("getLightG", &getLightG);
+    emscripten::function("getLightB", &getLightB);
+    emscripten::function("getLightIntensity", &getLightIntensity);
+    emscripten::function("resetLights", &resetLights);
     
     // Material
     emscripten::function("updateMaterial", &updateMaterial);
