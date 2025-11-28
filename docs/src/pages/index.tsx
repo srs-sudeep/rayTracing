@@ -7,6 +7,13 @@ import styles from './index.module.css';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
+  
+  // Detect if we're in local development
+  const isLocalDev = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  
+  const appUrl = isLocalDev ? 'http://localhost:5173' : 'https://ray-tracing.vercel.app/';
+  
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
@@ -24,7 +31,7 @@ function HomepageHeader() {
               </Link>
               <Link
                 className="button button--outline button--lg"
-                href="https://ray-tracing.vercel.app/">
+                href={appUrl}>
                 Launch App ↗
               </Link>
             </div>

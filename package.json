@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:docs": "cd docs && npm run start",
+    "dev:all": "npm run dev & npm run dev:docs",
     "build": "vite build && npm run build:docs",
     "build:app": "vite build",
     "build:docs": "cd docs && npm run build && cp -r build ../dist/docs",

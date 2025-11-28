@@ -1,7 +1,7 @@
-/* Hero Section */
+/* Hero Section - Theme Aware */
 .heroBanner {
   padding: 6rem 0;
-  background: linear-gradient(135deg, #0f0f12 0%, #1a1a1e 50%, #0f0f12 100%);
+  background: var(--custom-hero-bg);
   position: relative;
   overflow: hidden;
 }
@@ -14,8 +14,8 @@
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(232, 93, 76, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 80% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 20% 50%, var(--custom-hero-glow-1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 50%, var(--custom-hero-glow-2) 0%, transparent 40%);
   pointer-events: none;
 }
 
@@ -37,7 +37,7 @@
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #f4f4f5;
+  color: var(--custom-text-primary);
 }
 
 .highlight {
@@ -49,7 +49,7 @@
 
 .heroSubtitle {
   font-size: 1.25rem;
-  color: #a1a1aa;
+  color: var(--custom-text-secondary);
   margin-bottom: 2rem;
 }
 
@@ -59,25 +59,25 @@
   flex-wrap: wrap;
 }
 
-.buttons .button--secondary {
+.buttons :global(.button--secondary) {
   background: #e85d4c;
   border-color: #e85d4c;
   color: white;
 }
 
-.buttons .button--secondary:hover {
+.buttons :global(.button--secondary:hover) {
   background: #d44a39;
   border-color: #d44a39;
 }
 
-.buttons .button--outline {
-  color: #f4f4f5;
-  border-color: #3f3f46;
+.buttons :global(.button--outline) {
+  color: var(--custom-button-outline-color);
+  border-color: var(--custom-button-outline-border);
 }
 
-.buttons .button--outline:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #52525b;
+.buttons :global(.button--outline:hover) {
+  background: rgba(128, 128, 128, 0.1);
+  border-color: var(--ifm-color-primary);
 }
 
 /* Hero Image/Animation */
@@ -131,14 +131,14 @@
 /* Features Section */
 .features {
   padding: 5rem 0;
-  background: #09090b;
+  background: var(--custom-section-bg);
 }
 
 .featuresTitle {
   text-align: center;
   font-size: 2rem;
   margin-bottom: 3rem;
-  color: #f4f4f5;
+  color: var(--custom-text-primary);
 }
 
 .featureGrid {
@@ -148,16 +148,21 @@
 }
 
 .feature {
-  background: #0f0f12;
-  border: 1px solid #27272a;
+  background: var(--custom-card-bg);
+  border: 1px solid var(--custom-card-border);
   border-radius: 12px;
   padding: 1.5rem;
-  transition: transform 0.2s, border-color 0.2s;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .feature:hover {
   transform: translateY(-4px);
-  border-color: #3f3f46;
+  border-color: var(--ifm-color-primary-light);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] .feature:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .featureIcon {
@@ -168,11 +173,11 @@
 .feature h3 {
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
-  color: #f4f4f5;
+  color: var(--custom-text-primary);
 }
 
 .feature p {
-  color: #a1a1aa;
+  color: var(--custom-text-secondary);
   font-size: 0.95rem;
   margin: 0;
 }
@@ -180,8 +185,8 @@
 /* Tech Stack Section */
 .techStack {
   padding: 5rem 0;
-  background: #0a0a0c;
-  border-top: 1px solid #27272a;
+  background: var(--custom-section-alt-bg);
+  border-top: 1px solid var(--custom-card-border);
 }
 
 .techGrid {
@@ -197,8 +202,8 @@
   align-items: center;
   text-align: center;
   padding: 1.5rem;
-  background: #0f0f12;
-  border: 1px solid #27272a;
+  background: var(--custom-card-bg);
+  border: 1px solid var(--custom-card-border);
   border-radius: 12px;
   min-width: 140px;
   transition: transform 0.2s;
@@ -214,13 +219,13 @@
 }
 
 .techCard strong {
-  color: #f4f4f5;
+  color: var(--custom-text-primary);
   font-size: 1rem;
   margin-bottom: 0.25rem;
 }
 
 .techCard span:last-child {
-  color: #71717a;
+  color: var(--custom-text-muted);
   font-size: 0.85rem;
 }
 
@@ -257,8 +262,7 @@
     flex-direction: column;
   }
   
-  .buttons .button {
+  .buttons :global(.button) {
     width: 100%;
   }
 }
-

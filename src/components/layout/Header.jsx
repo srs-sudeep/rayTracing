@@ -8,6 +8,11 @@ function Header({ renderTime, resolution }) {
   const pixelCount = resolution * resolution;
   const pixelsPerSecond = renderTime > 0 ? (pixelCount / (renderTime / 1000)).toFixed(0) : 0;
 
+  // In dev mode (localhost:5173), link to docs dev server (localhost:3000)
+  // In production, use relative /docs path
+  const isDev = import.meta.env.DEV;
+  const docsUrl = isDev ? 'http://localhost:3000/docs/' : '/docs';
+
   return (
     <>
       <header className="header">
@@ -51,7 +56,9 @@ function Header({ renderTime, resolution }) {
 
         <div className="header-actions">
           <a 
-            href="/docs" 
+            href={docsUrl}
+            target={isDev ? "_blank" : "_self"}
+            rel={isDev ? "noopener noreferrer" : undefined}
             className="header-btn docs-btn"
           >
             <span>📖</span>

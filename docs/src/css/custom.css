@@ -5,6 +5,7 @@
 /* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Light Theme (Default) */
 :root {
   /* Primary Colors */
   --ifm-color-primary: #e85d4c;
@@ -26,9 +27,23 @@
   /* Borders */
   --ifm-global-radius: 8px;
   --ifm-code-border-radius: 6px;
+  
+  /* Custom variables for landing page (light) */
+  --custom-hero-bg: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%);
+  --custom-hero-glow-1: rgba(232, 93, 76, 0.08);
+  --custom-hero-glow-2: rgba(168, 85, 247, 0.05);
+  --custom-text-primary: #1a1a1a;
+  --custom-text-secondary: #4a4a4a;
+  --custom-text-muted: #6b7280;
+  --custom-card-bg: #ffffff;
+  --custom-card-border: #e5e7eb;
+  --custom-section-bg: #f9fafb;
+  --custom-section-alt-bg: #f3f4f6;
+  --custom-button-outline-color: #374151;
+  --custom-button-outline-border: #d1d5db;
 }
 
-/* Dark Theme Colors */
+/* Dark Theme */
 [data-theme='dark'] {
   --ifm-color-primary: #e85d4c;
   --ifm-color-primary-dark: #e54735;
@@ -44,6 +59,20 @@
   --ifm-footer-background-color: #0a0a0c;
   --ifm-toc-border-color: #27272a;
   --ifm-color-emphasis-300: #3f3f46;
+  
+  /* Custom variables for landing page (dark) */
+  --custom-hero-bg: linear-gradient(135deg, #0f0f12 0%, #1a1a1e 50%, #0f0f12 100%);
+  --custom-hero-glow-1: rgba(232, 93, 76, 0.1);
+  --custom-hero-glow-2: rgba(168, 85, 247, 0.08);
+  --custom-text-primary: #f4f4f5;
+  --custom-text-secondary: #a1a1aa;
+  --custom-text-muted: #71717a;
+  --custom-card-bg: #0f0f12;
+  --custom-card-border: #27272a;
+  --custom-section-bg: #09090b;
+  --custom-section-alt-bg: #0a0a0c;
+  --custom-button-outline-color: #f4f4f5;
+  --custom-button-outline-border: #3f3f46;
 }
 
 /* Navbar Styling */
@@ -55,9 +84,9 @@
   font-weight: 600;
 }
 
-/* Hero Section */
+/* Hero Section - uses theme-aware variables */
 .hero {
-  background: linear-gradient(135deg, #0f0f12 0%, #1a1a1e 100%);
+  background: var(--custom-hero-bg);
 }
 
 .hero__title {
@@ -71,9 +100,14 @@
 }
 
 /* Code Blocks */
-.prism-code {
+[data-theme='dark'] .prism-code {
   background: #0f0f12 !important;
   border: 1px solid #27272a;
+}
+
+[data-theme='light'] .prism-code {
+  background: #f6f8fa !important;
+  border: 1px solid #e1e4e8;
 }
 
 /* Tables */
@@ -174,27 +208,31 @@ pre code {
 
 .feature-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] .feature-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Syntax Highlighting Enhancements */
-.token.keyword {
+/* Syntax Highlighting - Dark Theme */
+[data-theme='dark'] .token.keyword {
   color: #c792ea;
 }
 
-.token.string {
+[data-theme='dark'] .token.string {
   color: #c3e88d;
 }
 
-.token.function {
+[data-theme='dark'] .token.function {
   color: #82aaff;
 }
 
-.token.number {
+[data-theme='dark'] .token.number {
   color: #f78c6c;
 }
 
-.token.comment {
+[data-theme='dark'] .token.comment {
   color: #676e95;
   font-style: italic;
 }
