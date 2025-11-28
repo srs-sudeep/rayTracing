@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run build:docs",
+    "build:app": "vite build",
+    "build:docs": "cd docs && npm run build && cp -r build ../dist/docs",
     "preview": "vite preview",
     "build:wasm": "cd cpp && chmod +x build.sh && ./build.sh"
   },

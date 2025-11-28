@@ -50,6 +50,13 @@ function Header({ renderTime, resolution }) {
         </div>
 
         <div className="header-actions">
+          <a 
+            href="/docs" 
+            className="header-btn docs-btn"
+          >
+            <span>📖</span>
+            <span>Docs</span>
+          </a>
           <button className="header-btn" onClick={() => setShowInfo(true)}>
             <span>ℹ️</span>
             <span>About</span>

@@ -7,8 +7,8 @@ const config: Config = {
   tagline: 'Real-time CPU Ray Tracing in the Browser',
   favicon: 'img/favicon.svg',
 
-  url: 'https://srs-sudeep.github.io',
-  baseUrl: '/rayTracing/',
+  url: 'https://ray-tracing.vercel.app',
+  baseUrl: '/docs/',
 
   organizationName: 'srs-sudeep',
   projectName: 'rayTracing',
@@ -28,6 +28,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/srs-sudeep/rayTracing/tree/main/docs/',
+          routeBasePath: '/',
         },
         blog: false,
         theme: {
@@ -53,6 +54,11 @@ const config: Config = {
           label: 'Documentation',
         },
         {
+          href: 'https://ray-tracing.vercel.app/',
+          label: '🎨 Launch App',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/srs-sudeep/rayTracing',
           label: 'GitHub',
           position: 'right',
@@ -67,15 +73,15 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs',
+              to: '/intro',
             },
             {
               label: 'C++ Engine',
-              to: '/docs/cpp-engine/overview',
+              to: '/cpp-engine/overview',
             },
             {
               label: 'React Frontend',
-              to: '/docs/react-frontend/overview',
+              to: '/react-frontend/overview',
             },
           ],
         },
@@ -88,7 +94,7 @@ const config: Config = {
             },
             {
               label: 'Live Demo',
-              href: 'https://srs-sudeep.github.io/rayTracing/',
+              href: 'https://ray-tracing.vercel.app/',
             },
           ],
         },

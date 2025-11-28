@@ -119,6 +119,17 @@
   border-color: var(--border-accent);
 }
 
+.header-btn.docs-btn {
+  background: linear-gradient(135deg, rgba(232, 93, 76, 0.15), rgba(251, 191, 36, 0.1));
+  border-color: rgba(232, 93, 76, 0.3);
+  color: var(--accent-primary);
+}
+
+.header-btn.docs-btn:hover {
+  background: linear-gradient(135deg, rgba(232, 93, 76, 0.25), rgba(251, 191, 36, 0.15));
+  border-color: var(--accent-primary);
+}
+
 .header-btn span:first-child {
   font-size: 0.9rem;
 }
