@@ -6,9 +6,13 @@ const SCENE_PRESETS = [
   { id: 2, name: 'Mirror', icon: '🪞' },
   { id: 3, name: 'Rainbow', icon: '🌈' },
   { id: 4, name: 'Glass', icon: '💎' },
+  { id: 5, name: 'Shapes', icon: '🧊' },
 ];
 
-function SceneToolbar({ activePreset, onPresetChange, sphereCount, disabled }) {
+function SceneToolbar({ activePreset, onPresetChange, objectCounts, disabled }) {
+  const { spheres = 0, boxes = 0, cylinders = 0 } = objectCounts || {};
+  const total = spheres + boxes + cylinders;
+
   return (
     <div className="scene-toolbar">
       <div className="toolbar-section">
@@ -30,9 +34,27 @@ function SceneToolbar({ activePreset, onPresetChange, sphereCount, disabled }) {
       </div>
       
       <div className="toolbar-info">
-        <span className="info-chip">
+        {spheres > 0 && (
+          <span className="info-chip" title="Spheres">
+            <span className="chip-icon">⚪</span>
+            {spheres}
+          </span>
+        )}
+        {boxes > 0 && (
+          <span className="info-chip" title="Boxes">
+            <span className="chip-icon">▢</span>
+            {boxes}
+          </span>
+        )}
+        {cylinders > 0 && (
+          <span className="info-chip" title="Cylinders">
+            <span className="chip-icon">⬭</span>
+            {cylinders}
+          </span>
+        )}
+        <span className="info-chip total" title="Total objects">
           <span className="chip-icon">◉</span>
-          {sphereCount} sphere{sphereCount > 1 ? 's' : ''}
+          {total} object{total !== 1 ? 's' : ''}
         </span>
       </div>
     </div>
@@ -40,4 +62,3 @@ function SceneToolbar({ activePreset, onPresetChange, sphereCount, disabled }) {
 }
 
 export default SceneToolbar;
-

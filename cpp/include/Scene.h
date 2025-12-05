@@ -4,6 +4,8 @@
 #include "Ray.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "Box.h"
+#include "Cylinder.h"
 #include "Light.h"
 #include "Camera.h"
 #include <vector>
@@ -16,12 +18,15 @@ enum class ScenePreset {
     THREE_SPHERES = 1,
     MIRROR_SPHERES = 2,
     RAINBOW = 3,
-    GLASS_SPHERES = 4
+    GLASS_SPHERES = 4,
+    PRIMITIVES = 5
 };
 
 class Scene {
 public:
     std::vector<Sphere> spheres;
+    std::vector<Box> boxes;
+    std::vector<Cylinder> cylinders;
     std::vector<Light> lights;
     Plane groundPlane;
     Camera camera;
@@ -63,6 +68,8 @@ public:
     void loadPreset(ScenePreset preset) {
         currentPreset = preset;
         spheres.clear();
+        boxes.clear();
+        cylinders.clear();
 
         switch (preset) {
             case ScenePreset::SINGLE_SPHERE: {
@@ -167,6 +174,45 @@ public:
                 spheres.push_back(Sphere(Vec3(-0.7f, -0.7f, 1.5f), 0.3f, waterMat));
                 break;
             }
+
+            case ScenePreset::PRIMITIVES: {
+                // Showcase different primitive types
+
+                // Central metallic sphere
+                Material sphereMat(Vec3(0.9f, 0.3f, 0.2f), 0.8f, 128.0f);
+                sphereMat.reflectivity = 0.4f;
+                spheres.push_back(Sphere(Vec3(0.0f, 0.0f, 0.0f), 0.8f, sphereMat));
+
+                // Blue cube on the left
+                Material boxMat(Vec3(0.2f, 0.4f, 0.9f), 0.7f, 64.0f);
+                boxMat.reflectivity = 0.3f;
+                boxes.push_back(Box(Vec3(-2.2f, -0.35f, 0.3f), Vec3(1.3f, 1.3f, 1.3f), boxMat));
+
+                // Green cylinder on the right
+                Material cylMat(Vec3(0.2f, 0.85f, 0.4f), 0.6f, 48.0f);
+                cylMat.reflectivity = 0.25f;
+                cylinders.push_back(Cylinder(Vec3(2.0f, -1.0f, 0.5f), 0.5f, 1.4f, cylMat));
+
+                // Small golden sphere behind
+                Material goldMat(Vec3(1.0f, 0.84f, 0.0f), 0.9f, 128.0f);
+                goldMat.reflectivity = 0.7f;
+                spheres.push_back(Sphere(Vec3(0.0f, -0.5f, -2.0f), 0.5f, goldMat));
+
+                // Glass cube in front right
+                Material glassMat = Material::glass();
+                boxes.push_back(Box(Vec3(1.0f, -0.6f, 1.8f), Vec3(0.8f, 0.8f, 0.8f), glassMat));
+
+                // Purple cylinder behind left
+                Material purpleMat(Vec3(0.6f, 0.2f, 0.9f), 0.5f, 32.0f);
+                purpleMat.reflectivity = 0.2f;
+                cylinders.push_back(Cylinder(Vec3(-1.5f, -1.0f, -1.5f), 0.4f, 1.0f, purpleMat));
+
+                // Small mirror sphere accent
+                Material mirrorMat(Vec3(0.95f, 0.95f, 0.95f), 1.0f, 256.0f);
+                mirrorMat.reflectivity = 0.9f;
+                spheres.push_back(Sphere(Vec3(-0.7f, -0.75f, 1.5f), 0.25f, mirrorMat));
+                break;
+            }
         }
     }
 
@@ -178,6 +224,22 @@ public:
         // Test all spheres
         for (const auto& sphere : spheres) {
             HitRecord hit = sphere.intersect(ray);
+            if (hit.hit && hit.t < closest.t) {
+                closest = hit;
+            }
+        }
+
+        // Test all boxes
+        for (const auto& box : boxes) {
+            HitRecord hit = box.intersect(ray);
+            if (hit.hit && hit.t < closest.t) {
+                closest = hit;
+            }
+        }
+
+        // Test all cylinders
+        for (const auto& cylinder : cylinders) {
+            HitRecord hit = cylinder.intersect(ray);
             if (hit.hit && hit.t < closest.t) {
                 closest = hit;
             }
@@ -205,6 +267,22 @@ public:
         // Check all spheres
         for (const auto& sphere : spheres) {
             HitRecord hit = sphere.intersect(shadowRay);
+            if (hit.hit && hit.t < lightDistance) {
+                return true;
+            }
+        }
+
+        // Check all boxes
+        for (const auto& box : boxes) {
+            HitRecord hit = box.intersect(shadowRay);
+            if (hit.hit && hit.t < lightDistance) {
+                return true;
+            }
+        }
+
+        // Check all cylinders
+        for (const auto& cylinder : cylinders) {
+            HitRecord hit = cylinder.intersect(shadowRay);
             if (hit.hit && hit.t < lightDistance) {
                 return true;
             }
@@ -535,6 +613,18 @@ public:
 
     int getSphereCount() const {
         return static_cast<int>(spheres.size());
+    }
+
+    int getBoxCount() const {
+        return static_cast<int>(boxes.size());
+    }
+
+    int getCylinderCount() const {
+        return static_cast<int>(cylinders.size());
+    }
+
+    int getTotalObjectCount() const {
+        return static_cast<int>(spheres.size() + boxes.size() + cylinders.size());
     }
 
     // Camera FOV and target

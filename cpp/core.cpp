@@ -15,6 +15,8 @@
 #include "include/Light.h"
 #include "include/Camera.h"
 #include "include/Sphere.h"
+#include "include/Box.h"
+#include "include/Cylinder.h"
 #include "include/Plane.h"
 #include "include/Scene.h"
 #include "include/Renderer.h"
@@ -46,6 +48,18 @@ void loadScenePreset(int preset) {
 
 int getSphereCount() {
     return globalScene.getSphereCount();
+}
+
+int getBoxCount() {
+    return globalScene.getBoxCount();
+}
+
+int getCylinderCount() {
+    return globalScene.getCylinderCount();
+}
+
+int getTotalObjectCount() {
+    return globalScene.getTotalObjectCount();
 }
 
 // ============================================================================
@@ -228,6 +242,9 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     // Scene
     emscripten::function("loadScenePreset", &loadScenePreset);
     emscripten::function("getSphereCount", &getSphereCount);
+    emscripten::function("getBoxCount", &getBoxCount);
+    emscripten::function("getCylinderCount", &getCylinderCount);
+    emscripten::function("getTotalObjectCount", &getTotalObjectCount);
     
     // Light
     emscripten::function("updateLight", &updateLight);

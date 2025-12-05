@@ -23,7 +23,7 @@ function App() {
   
   // Scene state
   const [scenePreset, setScenePreset] = useState(0);
-  const [sphereCount, setSphereCount] = useState(1);
+  const [objectCounts, setObjectCounts] = useState({ spheres: 1, boxes: 0, cylinders: 0 });
   const [lights, setLights] = useState([{ ...DEFAULT_LIGHT }]);
   const [material, setMaterial] = useState({ 
     color: { r: 0.9, g: 0.2, b: 0.15 },
@@ -53,21 +53,30 @@ function App() {
   });
   const [renderTime, setRenderTime] = useState(0);
 
+  // Helper to get all object counts from WASM
+  const updateObjectCounts = useCallback(() => {
+    if (wasmModule) {
+      setObjectCounts({
+        spheres: wasmModule.getSphereCount(),
+        boxes: wasmModule.getBoxCount(),
+        cylinders: wasmModule.getCylinderCount()
+      });
+    }
+  }, [wasmModule]);
+
   // Handle scene preset change
   const handlePresetChange = useCallback((presetId) => {
     setScenePreset(presetId);
     if (wasmModule) {
       wasmModule.loadScenePreset(presetId);
-      setSphereCount(wasmModule.getSphereCount());
+      updateObjectCounts();
     }
-  }, [wasmModule]);
+  }, [wasmModule, updateObjectCounts]);
 
   // Initialize when WASM loads
   useEffect(() => {
-    if (wasmModule) {
-      setSphereCount(wasmModule.getSphereCount());
-    }
-  }, [wasmModule]);
+    updateObjectCounts();
+  }, [updateObjectCounts]);
 
   const handleCameraReset = () => {
     setCamera({ 
@@ -139,7 +148,7 @@ function App() {
           <SceneToolbar
             activePreset={scenePreset}
             onPresetChange={handlePresetChange}
-            sphereCount={sphereCount}
+            objectCounts={objectCounts}
             disabled={isDisabled}
           />
           
@@ -196,7 +205,9 @@ function App() {
           <div className="scene-info">
             <h3>Render Info</h3>
             <ul>
-              <li><span>Objects</span><span>{sphereCount} + Ground</span></li>
+              <li><span>Spheres</span><span>{objectCounts.spheres}</span></li>
+              {objectCounts.boxes > 0 && <li><span>Boxes</span><span>{objectCounts.boxes}</span></li>}
+              {objectCounts.cylinders > 0 && <li><span>Cylinders</span><span>{objectCounts.cylinders}</span></li>}
               <li><span>Lights</span><span>{lights.length} Point{lights.length > 1 ? 's' : ''}</span></li>
               <li><span>Bounces</span><span>{view.maxBounces}</span></li>
             </ul>
