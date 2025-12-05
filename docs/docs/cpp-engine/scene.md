@@ -4,7 +4,7 @@ sidebar_position: 9
 
 # Scene
 
-The `Scene` class manages all objects, lights, and the camera. It contains the core ray tracing logic.
+The `Scene` class manages all objects, lights, and the camera. It contains the core ray tracing logic including support for soft shadows.
 
 ## Definition
 
@@ -18,7 +18,7 @@ enum class ScenePreset {
 
 class Scene {
 public:
-    std::vector<Sphere> spheres;    // All spheres in scene
+    std::vector<Sphere> spheres;     // All spheres in scene
     std::vector<Light> lights;       // All light sources
     Plane groundPlane;               // Ground plane
     Camera camera;                   // Active camera
@@ -27,6 +27,10 @@ public:
     bool showGroundPlane;            // Plane visibility
     int maxReflectionDepth;          // Max recursive bounces
     ScenePreset currentPreset;       // Active preset
+    
+    // Soft shadow settings
+    bool softShadowsEnabled;         // Enable area light shadows
+    int shadowSamples;               // Shadow rays per light
 };
 ```
 
@@ -48,7 +52,7 @@ Vec3 traceRay(const Ray& ray, int depth) const {
         return getBackgroundColor(ray);
     }
 
-    // Calculate local lighting
+    // Calculate local lighting (with soft shadows)
     Vec3 localColor = calculateLocalLighting(ray, hit);
 
     // Add reflections if material is reflective
@@ -102,8 +106,10 @@ HitRecord trace(const Ray& ray) const {
 
 ### Shadow Detection
 
+#### Hard Shadows (Point Light)
+
 ```cpp
-bool isInShadow(const Vec3& point, const Vec3& lightPos) const {
+bool isInShadowHard(const Vec3& point, const Vec3& lightPos) const {
     Vec3 toLight = lightPos - point;
     float lightDistance = toLight.length();
     Vec3 lightDir = toLight.normalize();
@@ -121,6 +127,39 @@ bool isInShadow(const Vec3& point, const Vec3& lightPos) const {
 }
 ```
 
+#### Soft Shadows (Area Light)
+
+```cpp
+float calculateShadowFactor(const Vec3& point, const Light& light) const {
+    if (!softShadowsEnabled || light.radius <= 0.0f) {
+        // Hard shadows - binary test
+        return isInShadowHard(point, light.position) ? 0.3f : 1.0f;
+    }
+    
+    // Soft shadows - stratified sampling
+    int litSamples = 0;
+    int sqrtSamples = static_cast<int>(std::sqrt(shadowSamples));
+    
+    for (int i = 0; i < sqrtSamples; ++i) {
+        for (int j = 0; j < sqrtSamples; ++j) {
+            // Stratified random offset
+            float u = (i + random()) / sqrtSamples;
+            float v = (j + random()) / sqrtSamples;
+            
+            // Sample point on area light
+            Vec3 samplePos = light.getSamplePointDisk(u, v, point);
+            
+            if (!isInShadowHard(point, samplePos)) {
+                litSamples++;
+            }
+        }
+    }
+    
+    float visibility = float(litSamples) / float(sqrtSamples * sqrtSamples);
+    return 0.3f + visibility * 0.7f;  // 0.3 to 1.0
+}
+```
+
 ### Local Lighting (Blinn-Phong)
 
 ```cpp
@@ -131,8 +170,8 @@ Vec3 calculateLocalLighting(const Ray& ray, const HitRecord& hit) const {
     for (const auto& light : lights) {
         Vec3 lightDir = (light.position - hit.point).normalize();
         
-        // Shadow check
-        float shadowFactor = isInShadow(hit.point, light.position) ? 0.3f : 1.0f;
+        // Shadow check (soft or hard)
+        float shadowFactor = calculateShadowFactor(hit.point, light);
         
         // Diffuse
         float diff = std::max(0.0f, hit.normal.dot(lightDir));
@@ -211,6 +250,12 @@ void updateGroundReflectivity(float reflectivity);
 
 // Light updates
 void updateLight(float x, float y, float z);
+int addLight(float x, float y, float z, float r, float g, float b, float intensity);
+void removeLight(int index);
+void setLightPosition(int index, float x, float y, float z);
+void setLightColor(int index, float r, float g, float b);
+void setLightIntensity(int index, float intensity);
+void setLightRadius(int index, float radius);  // For soft shadows
 
 // Camera updates
 void updateCamera(float x, float y, float z);
@@ -224,6 +269,10 @@ void setShowGroundPlane(bool show);
 void setShowGrid(bool show);
 void setGridScale(float scale);
 void setMaxReflectionDepth(int depth);
+
+// Soft shadow settings
+void setSoftShadows(bool enabled);
+void setShadowSamples(int samples);
 ```
 
 ## Rendering Flow
@@ -232,7 +281,7 @@ void setMaxReflectionDepth(int depth);
 1. React state changes (user interaction)
         │
         ▼
-2. WASM bindings called (updateLight, updateMaterial, etc.)
+2. WASM bindings called (updateLight, setSoftShadows, etc.)
         │
         ▼
 3. Scene state updated (C++ objects modified)
@@ -241,14 +290,18 @@ void setMaxReflectionDepth(int depth);
 4. render() called with resolution
         │
         ▼
-5. For each pixel:
-   ├── Generate camera ray
+5. For each pixel (with AA if enabled):
+   ├── Generate camera ray(s)
    ├── traceRay(ray, 0)
    │   ├── Find intersection
    │   ├── Calculate lighting
-   │   ├── Check shadows
+   │   │   └── For each light:
+   │   │       └── calculateShadowFactor()
+   │   │           ├── Hard: 1 shadow ray
+   │   │           └── Soft: N shadow rays (stratified)
+   │   ├── Apply shadow factors
    │   └── Recursively trace reflections
-   └── Write RGBA to buffer
+   └── Average samples, write RGBA to buffer
         │
         ▼
 6. Return pixel buffer to JavaScript
@@ -257,3 +310,21 @@ void setMaxReflectionDepth(int depth);
 7. Display on Canvas
 ```
 
+## Performance Considerations
+
+### Shadow Ray Cost
+
+| Shadow Type | Rays/Light/Hit | With 2 Lights |
+|-------------|----------------|---------------|
+| Hard | 1 | 2 |
+| Soft (4) | 4 | 8 |
+| Soft (9) | 9 | 18 |
+| Soft (16) | 16 | 32 |
+| Soft (25) | 25 | 50 |
+
+### Optimization Tips
+
+1. Use hard shadows during interaction, enable soft for final render
+2. Lower resolution with higher shadow samples can look better than vice versa
+3. Disable AA when using many shadow samples
+4. Reduce max bounces when soft shadows are enabled

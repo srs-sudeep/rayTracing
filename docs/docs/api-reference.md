@@ -59,7 +59,7 @@ function getSphereCount(): number
 
 ## Light
 
-RayTracer Studio supports **multiple colored lights** (up to 4).
+RayTracer Studio supports **multiple colored lights** (up to 4) with **area light** support for soft shadows.
 
 ### `addLight(x, y, z, r, g, b, intensity)`
 
@@ -118,6 +118,25 @@ function setLightIntensity(
 ): void
 ```
 
+### `setLightRadius(index, radius)`
+
+Sets the light's area radius for soft shadows.
+
+```typescript
+function setLightRadius(
+  index: number,
+  radius: number  // 0.0 - 2.0 (0 = point light)
+): void
+```
+
+### `getLightRadius(index)`
+
+Gets a light's area radius.
+
+```typescript
+function getLightRadius(index: number): number
+```
+
 ### `getLightCount()`
 
 Returns the number of lights in the scene.
@@ -136,6 +155,7 @@ function getLightR(index: number): number
 function getLightG(index: number): number
 function getLightB(index: number): number
 function getLightIntensity(index: number): number
+function getLightRadius(index: number): number
 ```
 
 ### `resetLights()`
@@ -288,6 +308,77 @@ function setMaxReflectionDepth(depth: number): void  // 1 - 10
 
 ---
 
+## Anti-Aliasing ✨
+
+### `setAntiAliasing(level)`
+
+Sets the anti-aliasing level.
+
+```typescript
+function setAntiAliasing(level: number): void
+```
+
+**Level values:**
+- `0` - Off (1 sample per pixel)
+- `1` - 2×2 (4 samples per pixel)
+- `2` - 4×4 (16 samples per pixel)
+
+### `getAntiAliasing()`
+
+Gets the current AA level.
+
+```typescript
+function getAntiAliasing(): number
+```
+
+### `getSamplesPerPixel()`
+
+Returns the number of samples per pixel for the current AA setting.
+
+```typescript
+function getSamplesPerPixel(): number  // 1, 4, or 16
+```
+
+---
+
+## Soft Shadows ✨
+
+### `setSoftShadows(enabled)`
+
+Enables or disables soft shadows (area lights).
+
+```typescript
+function setSoftShadows(enabled: boolean): void
+```
+
+### `getSoftShadows()`
+
+Returns whether soft shadows are enabled.
+
+```typescript
+function getSoftShadows(): boolean
+```
+
+### `setShadowSamples(samples)`
+
+Sets the number of shadow rays per light.
+
+```typescript
+function setShadowSamples(samples: number): void  // 1 - 64
+```
+
+**Recommended values:** 4, 9, 16, 25
+
+### `getShadowSamples()`
+
+Gets the current shadow sample count.
+
+```typescript
+function getShadowSamples(): number
+```
+
+---
+
 ## VectorUint8
 
 The return type of `render()`. A wrapper around `std::vector<uint8_t>`.
@@ -333,3 +424,54 @@ const imageData = new ImageData(pixelData, 512, 512);
 ctx.putImageData(imageData, 0, 0);
 ```
 
+---
+
+## Complete Example
+
+```javascript
+// Initialize
+const wasmModule = await initRaytracer();
+
+// Set up scene
+wasmModule.loadScenePreset(1);  // Three spheres
+
+// Configure lighting
+wasmModule.setLightPosition(0, 2, 4, -2);
+wasmModule.setLightColor(0, 1.0, 0.9, 0.8);  // Warm white
+wasmModule.setLightIntensity(0, 1.2);
+
+// Enable soft shadows
+wasmModule.setSoftShadows(true);
+wasmModule.setShadowSamples(16);
+wasmModule.setLightRadius(0, 0.5);
+
+// Configure material
+wasmModule.updateMaterial(0.6, 64, 0.3);
+wasmModule.updateSphereColor(0.9, 0.2, 0.15);
+
+// Configure camera
+wasmModule.updateCamera(0, 1, -4);
+wasmModule.setCameraTarget(0, 0, 0);
+wasmModule.setCameraFov(60);
+
+// Enable anti-aliasing
+wasmModule.setAntiAliasing(1);  // 2×2
+
+// View settings
+wasmModule.setShowGroundPlane(true);
+wasmModule.setShowGrid(true);
+wasmModule.setMaxReflectionDepth(5);
+
+// Render
+const pixels = wasmModule.render(512, 512);
+
+// Copy to canvas
+const data = new Uint8ClampedArray(pixels.size());
+for (let i = 0; i < pixels.size(); i++) {
+  data[i] = pixels.get(i);
+}
+pixels.delete();
+
+const imageData = new ImageData(data, 512, 512);
+ctx.putImageData(imageData, 0, 0);
+```

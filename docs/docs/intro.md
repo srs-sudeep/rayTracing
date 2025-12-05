@@ -14,11 +14,14 @@ RayTracer Studio is an educational and interactive ray tracing application that 
 
 - 🎨 **Real-time Rendering** - Interactive ray tracing with immediate visual feedback
 - 🪞 **Recursive Reflections** - Accurate mirror reflections with Fresnel effect
-- 💡 **Blinn-Phong Shading** - Realistic specular highlights
-- 🌑 **Shadow Rays** - Hard shadows from point lights
+- 💡 **Multiple Colored Lights** - Up to 4 lights with customizable colors
+- 🌑 **Soft Shadows** - Realistic penumbra with area light simulation
+- ✨ **Anti-Aliasing** - Supersampling (2×2, 4×4) with jittered sampling
+- 💎 **Blinn-Phong Shading** - Realistic specular highlights
 - 📷 **Interactive Camera** - Orbit, zoom, and adjust field of view
 - 🎭 **Scene Presets** - Multiple sphere arrangements to explore
 - 📐 **3D Ground Plane** - Blender-style infinite grid
+- 📱 **Responsive Design** - Works on desktop and mobile devices
 
 ## Technology Stack
 

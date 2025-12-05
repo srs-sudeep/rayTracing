@@ -4,7 +4,7 @@ sidebar_position: 5
 
 # Light
 
-The `Light` struct represents a point light source that illuminates the scene. RayTracer Studio supports **multiple colored lights** for complex lighting setups.
+The `Light` struct represents a light source that illuminates the scene. RayTracer Studio supports **multiple colored lights** (up to 4) and **area lights** for soft shadows.
 
 ## Definition
 
@@ -13,17 +13,91 @@ struct Light {
     Vec3 position;   // Light position in world space
     Vec3 color;      // Light color (RGB, 0-1)
     float intensity; // Light brightness multiplier (0-2)
+    float radius;    // Area light radius for soft shadows (0 = point light)
 
     Light() 
         : position(Vec3(2.0f, 2.0f, -1.0f))
-        , color(Vec3(1.0f, 1.0f, 1.0f))  // White light
-        , intensity(1.0f) {}
+        , color(Vec3(1.0f, 1.0f, 1.0f))
+        , intensity(1.0f)
+        , radius(0.5f) {}
 
-    Light(const Vec3& pos, const Vec3& col, float intens)
+    Light(const Vec3& pos, const Vec3& col, float intens, float rad = 0.5f)
         : position(pos)
         , color(col)
-        , intensity(intens) {}
+        , intensity(intens)
+        , radius(rad) {}
+
+    // Sample point on area light for soft shadows
+    Vec3 getSamplePointDisk(float u, float v, const Vec3& target) const;
 };
+```
+
+## Point Light vs Area Light
+
+### Point Light (radius = 0)
+
+Emits light from a single infinitesimal point, creating **hard shadows**:
+
+```
+            ╲ │ ╱
+             ╲│╱
+          ────●────  Light Position
+             ╱│╲
+            ╱ │ ╲
+           ↙  ↓  ↘   Light rays from single point
+
+Shadow: ████████████  (sharp edge)
+```
+
+### Area Light (radius > 0)
+
+Emits light from a spherical area, creating **soft shadows**:
+
+```
+           ╲   │   ╱
+            ╲  │  ╱
+         ╱───(●)───╲  Light with radius
+            ╱  │  ╲
+           ╱   │   ╲
+          ↙    ↓    ↘  Light rays from area
+
+Shadow: ░░▓▓████▓▓░░  (soft penumbra)
+```
+
+## Area Light Sampling
+
+For soft shadows, we sample multiple points on the light's surface:
+
+```cpp
+Vec3 getSamplePointDisk(float u, float v, const Vec3& target) const {
+    if (radius <= 0.0f) return position;
+    
+    // Direction from light to target
+    Vec3 toTarget = (target - position).normalize();
+    
+    // Create orthonormal basis on disk facing target
+    Vec3 up = (std::abs(toTarget.y) < 0.9f) ? Vec3(0, 1, 0) : Vec3(1, 0, 0);
+    Vec3 right = toTarget.cross(up).normalize();
+    up = right.cross(toTarget).normalize();
+    
+    // Random point in unit disk (concentric mapping for uniform distribution)
+    float r = std::sqrt(u);
+    float theta = 2.0f * PI * v;
+    float dx = r * std::cos(theta);
+    float dy = r * std::sin(theta);
+    
+    return position + right * (dx * radius) + up * (dy * radius);
+}
+```
+
+This creates a disk-shaped sampling area that always faces the point being shaded:
+
+```
+         ┌─────┐
+         │ ○ ○ │
+Target ◄─│○ ● ○│── Disk samples face target
+         │ ○ ○ │
+         └─────┘
 ```
 
 ## Multiple Lights
@@ -44,20 +118,8 @@ class Scene {
     void setLightPosition(int index, float x, float y, float z);
     void setLightColor(int index, float r, float g, float b);
     void setLightIntensity(int index, float intensity);
+    void setLightRadius(int index, float radius);  // For soft shadows
 };
-```
-
-## Point Light Model
-
-A point light emits light equally in all directions from a single point:
-
-```
-            ╲ │ ╱
-             ╲│╱
-          ────●────  Light Position
-             ╱│╲
-            ╱ │ ╲
-           ↙  ↓  ↘   Light rays in all directions
 ```
 
 ## Lighting Calculation
@@ -73,8 +135,8 @@ Vec3 calculateLocalLighting(const Ray& ray, const HitRecord& hit) const {
     for (const auto& light : lights) {
         Vec3 lightDir = (light.position - hit.point).normalize();
         
-        // Shadow check for this specific light
-        float shadowFactor = isInShadow(hit.point, light.position) ? 0.3f : 1.0f;
+        // Shadow check (soft or hard depending on settings)
+        float shadowFactor = calculateShadowFactor(hit.point, light);
         
         // Diffuse (Lambertian)
         float diff = std::max(0.0f, hit.normal.dot(lightDir));
@@ -124,11 +186,6 @@ Light color affects the appearance of illuminated surfaces:
 ```cpp
 // Surface color is multiplied by light color
 Vec3 litColor = surfaceColor * lightColor;
-
-// Examples:
-// Red surface + Blue light = Dark (no red in blue light)
-// Red surface + White light = Red
-// White surface + Blue light = Blue
 ```
 
 ### Intensity
@@ -143,25 +200,41 @@ A multiplier for brightness (0.0 to 2.0):
 | 1.5 | Bright (150%) |
 | 2.0 | Very bright |
 
+### Radius (for Soft Shadows)
+
+Controls the size of the area light:
+
+| Value | Effect |
+|-------|--------|
+| 0.0 | Point light (hard shadows) |
+| 0.1-0.3 | Small area (subtle softness) |
+| 0.5 | Medium area (default) |
+| 1.0-1.5 | Large area (very soft shadows) |
+
+Larger radius = softer shadow edges.
+
 ## Shadow Rays
 
-Each light casts its own shadows:
+Each light casts its own shadows. With soft shadows enabled, multiple rays are cast:
 
 ```cpp
-bool Scene::isInShadow(const Vec3& point, const Vec3& lightPos) const {
-    Vec3 toLight = lightPos - point;
-    float lightDistance = toLight.length();
-    Vec3 lightDir = toLight.normalize();
+float calculateShadowFactor(const Vec3& point, const Light& light) const {
+    if (!softShadowsEnabled || light.radius <= 0.0f) {
+        // Hard shadows
+        return isInShadowHard(point, light.position) ? 0.3f : 1.0f;
+    }
     
-    Ray shadowRay(point + lightDir * 0.001f, lightDir);
-    
-    for (const auto& sphere : spheres) {
-        HitRecord hit = sphere.intersect(shadowRay);
-        if (hit.hit && hit.t < lightDistance) {
-            return true;  // Light is blocked
+    // Soft shadows - sample multiple points on area light
+    int litSamples = 0;
+    for (int i = 0; i < shadowSamples; i++) {
+        Vec3 samplePos = light.getSamplePointDisk(random(), random(), point);
+        if (!isInShadowHard(point, samplePos)) {
+            litSamples++;
         }
     }
-    return false;
+    
+    float visibility = float(litSamples) / float(shadowSamples);
+    return 0.3f + visibility * 0.7f;  // 0.3 to 1.0
 }
 ```
 
@@ -172,17 +245,17 @@ With multiple lights, a point may be:
 
 ## UI Controls
 
-The Lights tab provides full control over multiple lights:
-
-### Light Selector
-- Tabs for each light (Light 1, Light 2, etc.)
-- Add (+) and Remove (−) buttons
-- Up to 4 lights maximum
-
-### Per-Light Controls
+### Light Tab
+- **Light Selector**: Tabs for each light (Light 1, Light 2, etc.)
+- **Add (+) / Remove (−)**: Up to 4 lights
 - **Color presets**: White, Warm, Cool, Red, Green, Blue
 - **Intensity slider**: 0% to 200%
 - **Position sliders**: X, Y, Z coordinates
+
+### View Tab (Soft Shadows)
+- **Soft Shadows toggle**: Enable/disable
+- **Light Size slider**: Controls radius for all lights
+- **Shadow Samples**: 4, 9, 16, or 25 rays per light
 
 ## API Reference
 
@@ -193,22 +266,25 @@ addLight(x, y, z, r, g, b, intensity: number): number
 // Remove light at index
 removeLight(index: number): void
 
-// Update light position
+// Position
 setLightPosition(index: number, x, y, z: number): void
-
-// Update light color
-setLightColor(index: number, r, g, b: number): void
-
-// Update light intensity
-setLightIntensity(index: number, intensity: number): void
-
-// Get current light count
-getLightCount(): number
-
-// Get light properties
 getLightX/Y/Z(index: number): number
+
+// Color
+setLightColor(index: number, r, g, b: number): void
 getLightR/G/B(index: number): number
+
+// Intensity
+setLightIntensity(index: number, intensity: number): void
 getLightIntensity(index: number): number
+
+// Radius (for soft shadows)
+setLightRadius(index: number, radius: number): void
+getLightRadius(index: number): number
+
+// Utility
+getLightCount(): number
+resetLights(): void
 ```
 
 ## Creative Uses
@@ -222,6 +298,6 @@ Classic film lighting setup:
 - Red and blue lights from opposite sides create dramatic contrast
 - Green light from below for spooky effect
 
-### Rim Lighting
-- Light from behind the subject creates a glowing edge
-- Enhance with high intensity
+### Soft vs Hard Shadows
+- Use hard shadows (radius = 0) for harsh sunlight
+- Use soft shadows (radius > 0) for indoor/overcast lighting
