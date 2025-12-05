@@ -93,6 +93,37 @@ Vec3 reflect(const Vec3& normal) const {
 }
 ```
 
+### Refraction
+
+```cpp
+// Refract vector through surface using Snell's law
+// eta = n1/n2 (ratio of refractive indices)
+// Returns zero vector if total internal reflection occurs
+Vec3 refract(const Vec3& normal, float eta) const {
+    float cosI = -this->dot(normal);
+    float sin2T = eta * eta * (1.0f - cosI * cosI);
+    
+    // Total internal reflection
+    if (sin2T > 1.0f) {
+        return Vec3(0, 0, 0);
+    }
+    
+    float cosT = std::sqrt(1.0f - sin2T);
+    return *this * eta + normal * (eta * cosI - cosT);
+}
+```
+
+**Usage:**
+```cpp
+// Entering glass from air (n1=1.0, n2=1.5)
+float eta = 1.0f / 1.5f;
+Vec3 refracted = rayDir.refract(normal, eta);
+
+if (refracted.lengthSquared() < 0.001f) {
+    // Total internal reflection - no refraction possible
+}
+```
+
 ### Color Utilities
 
 ```cpp
@@ -177,4 +208,32 @@ R = V - 2(V · N)N
 ```
 
 This is used for mirror reflections in recursive ray tracing.
+
+### Refraction Formula (Snell's Law)
+
+When light passes through materials with different densities:
+
+```
+n₁ sin(θ₁) = n₂ sin(θ₂)
+
+Refracted direction:
+T = ηI + (η cos(θ₁) - cos(θ₂))N
+
+where:
+  η = n₁/n₂ (ratio of refractive indices)
+  I = incident ray direction
+  N = surface normal
+```
+
+**Common refractive indices:**
+| Material | Index |
+|----------|-------|
+| Air | 1.0 |
+| Water | 1.33 |
+| Glass | 1.5 |
+| Crystal | 2.0 |
+| Diamond | 2.4 |
+
+**Total Internal Reflection:**  
+When `sin²(θ₂) > 1`, the ray cannot exit and is fully reflected internally. This happens at grazing angles when going from dense to less dense materials (e.g., inside glass looking out).
 

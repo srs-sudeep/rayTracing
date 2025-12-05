@@ -16,6 +16,8 @@ struct Material {
     float specularIntensity; // Specular brightness
     float shininess;         // Specular tightness
     float reflectivity;      // Mirror reflection
+    float transparency;      // Transparency (0-1)
+    float refractiveIndex;   // Index of refraction (1.0-3.0)
 };
 ```
 
@@ -130,11 +132,29 @@ Clear specular, noticeable reflection. Like polished plastic.
 ```
 Bright, tight specular. Strong reflections. Metallic appearance.
 
-### Mirror
+### Chrome
 ```cpp
 { specular: 1.0, shininess: 256, reflectivity: 0.95 }
 ```
 Near-perfect reflection. Chrome or polished silver.
+
+### Glass
+```cpp
+{ specular: 1.0, shininess: 256, transparency: 0.95, refractiveIndex: 1.5 }
+```
+Clear transparent material with light bending.
+
+### Diamond
+```cpp
+{ specular: 1.0, shininess: 512, transparency: 0.95, refractiveIndex: 2.4 }
+```
+High dispersion crystal with strong light bending.
+
+### Water
+```cpp
+{ specular: 0.8, shininess: 128, transparency: 0.9, refractiveIndex: 1.33 }
+```
+Liquid-like appearance with subtle blue tint.
 
 ## Visual Comparison
 

@@ -242,6 +242,109 @@ function Toggle({ id, label, checked, onChange, disabled }) {
 
 ---
 
+## ColorPicker
+
+A combined color picker with preset swatches and a custom color input.
+
+### Location
+
+```
+src/components/ui/ColorPicker.jsx
+```
+
+### Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `color` | `{ r, g, b }` | Current color (0-1 range) |
+| `onChange` | Function | Color change callback |
+| `disabled` | boolean | Disable picker |
+| `label` | string | Display label |
+
+### Usage
+
+```jsx
+<ColorPicker
+  color={material.color}
+  onChange={(color) => handleChange('color', color)}
+  label="Surface Color"
+/>
+```
+
+### Features
+
+- **Custom Color Button** - Opens native color picker
+- **Preset Grid** - 10 color swatches (Red, Orange, Gold, Green, Cyan, Blue, Purple, Pink, White, Gray)
+- **Hex Display** - Shows current color in hex format
+
+### Implementation
+
+```jsx
+function ColorPicker({ color, onChange, disabled, label }) {
+  const inputRef = useRef(null);
+  const currentHex = rgbToHex(color.r, color.g, color.b);
+  
+  return (
+    <div className="color-picker">
+      <div className="color-picker-header">
+        <span className="color-picker-label">{label}</span>
+        <span className="color-picker-value">{currentHex}</span>
+      </div>
+      
+      <div className="color-picker-row">
+        {/* Custom color button with hidden input */}
+        <button 
+          className="color-picker-custom"
+          onClick={() => inputRef.current?.click()}
+          style={{ background: currentHex }}
+        >
+          <span className="color-picker-icon">🎨</span>
+          <input
+            ref={inputRef}
+            type="color"
+            value={currentHex}
+            onChange={handleColorInputChange}
+            className="color-input-hidden"
+          />
+        </button>
+        
+        {/* Preset color grid */}
+        <div className="color-preset-grid">
+          {COLOR_PRESETS.map((preset) => (
+            <button
+              key={preset.name}
+              className={`color-preset-btn ${isActive ? 'active' : ''}`}
+              style={{ background: rgbToCss(preset.color) }}
+              onClick={() => onChange(preset.color)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### Color Conversion Helpers
+
+```javascript
+function rgbToHex(r, g, b) {
+  const toHex = (n) => Math.round(n * 255).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16) / 255,
+    g: parseInt(result[2], 16) / 255,
+    b: parseInt(result[3], 16) / 255
+  } : null;
+}
+```
+
+---
+
 ## Design Tokens
 
 All UI components use CSS custom properties defined in `:root`:

@@ -16,6 +16,8 @@ struct Material {
     float specularIntensity; // Specular highlight intensity
     float shininess;         // Specular exponent (tightness)
     float reflectivity;      // Mirror reflection factor
+    float transparency;      // Transparency (0 = opaque, 1 = fully transparent)
+    float refractiveIndex;   // Index of refraction (1.0 = air, 1.5 = glass)
     
     Material() 
         : color(Vec3(0.9f, 0.2f, 0.15f))  // Default red
@@ -23,7 +25,9 @@ struct Material {
         , diffuse(0.7f)
         , specularIntensity(0.5f)
         , shininess(32.0f)
-        , reflectivity(0.0f) {}
+        , reflectivity(0.0f)
+        , transparency(0.0f)
+        , refractiveIndex(1.0f) {}
 
     Material(const Vec3& col, float spec, float shine)
         : color(col)
@@ -31,7 +35,9 @@ struct Material {
         , diffuse(0.7f)
         , specularIntensity(spec)
         , shininess(shine)
-        , reflectivity(0.0f) {}
+        , reflectivity(0.0f)
+        , transparency(0.0f)
+        , refractiveIndex(1.0f) {}
 };
 ```
 
@@ -101,17 +107,88 @@ How much the surface acts as a mirror:
 - `0.7` - Highly reflective
 - `0.95` - Nearly perfect mirror
 
+### Transparency
+
+How see-through the material is:
+
+- `0.0` - Fully opaque
+- `0.5` - Semi-transparent
+- `0.9` - Mostly transparent (glass-like)
+- `1.0` - Fully transparent
+
+When transparency > 0, refraction is calculated using Snell's law.
+
+### Refractive Index (IOR)
+
+Controls how much light bends when entering the material:
+
+| Material | IOR | Effect |
+|----------|-----|--------|
+| Air | 1.0 | No bending |
+| Water | 1.33 | Slight bending |
+| Glass | 1.5 | Noticeable bending |
+| Crystal | 2.0 | Strong bending |
+| Diamond | 2.4 | Maximum sparkle |
+
+Higher IOR = more light bending = more distortion of objects behind.
+
+## Factory Methods
+
+Pre-configured materials for common transparent materials:
+
+```cpp
+// Clear glass material
+static Material glass(const Vec3& tint = Vec3(1.0f, 1.0f, 1.0f)) {
+    Material m;
+    m.color = tint;
+    m.transparency = 0.95f;
+    m.refractiveIndex = 1.5f;
+    m.specularIntensity = 1.0f;
+    m.shininess = 256.0f;
+    return m;
+}
+
+// Diamond material (high dispersion)
+static Material diamond() {
+    Material m;
+    m.transparency = 0.95f;
+    m.refractiveIndex = 2.4f;
+    m.specularIntensity = 1.0f;
+    m.shininess = 512.0f;
+    return m;
+}
+
+// Water-like material
+static Material water() {
+    Material m;
+    m.color = Vec3(0.8f, 0.9f, 1.0f);  // Slight blue tint
+    m.transparency = 0.9f;
+    m.refractiveIndex = 1.33f;
+    return m;
+}
+```
+
 ## Material Presets
 
 The UI provides these presets:
 
-| Preset | Specular | Shininess | Reflectivity |
-|--------|----------|-----------|--------------|
-| **Matte** | 0.1 | 8 | 0.0 |
-| **Plastic** | 0.4 | 32 | 0.1 |
-| **Glossy** | 0.6 | 64 | 0.3 |
-| **Metal** | 0.9 | 128 | 0.7 |
-| **Mirror** | 1.0 | 256 | 0.95 |
+### Opaque Materials
+
+| Preset | Specular | Shininess | Reflectivity | Transparency |
+|--------|----------|-----------|--------------|--------------|
+| **Matte** | 0.1 | 8 | 0.0 | 0.0 |
+| **Plastic** | 0.4 | 32 | 0.1 | 0.0 |
+| **Glossy** | 0.6 | 64 | 0.3 | 0.0 |
+| **Metal** | 0.9 | 128 | 0.7 | 0.0 |
+| **Chrome** | 1.0 | 256 | 0.95 | 0.0 |
+
+### Transparent Materials
+
+| Preset | Specular | Shininess | Transparency | IOR |
+|--------|----------|-----------|--------------|-----|
+| **Glass** | 1.0 | 256 | 0.95 | 1.5 |
+| **Diamond** | 1.0 | 512 | 0.95 | 2.4 |
+| **Water** | 0.8 | 128 | 0.9 | 1.33 |
 
 ## Shading Calculation
 

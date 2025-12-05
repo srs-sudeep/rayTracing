@@ -46,6 +46,8 @@ function loadScenePreset(preset: number): void
 - `1` - Three Spheres
 - `2` - Mirror Spheres
 - `3` - Rainbow
+- `4` - Glass Spheres
+- `5` - Primitives (mixed shapes)
 
 ### `getSphereCount()`
 
@@ -53,6 +55,30 @@ Returns the number of spheres in the current scene.
 
 ```typescript
 function getSphereCount(): number
+```
+
+### `getBoxCount()`
+
+Returns the number of boxes in the current scene.
+
+```typescript
+function getBoxCount(): number
+```
+
+### `getCylinderCount()`
+
+Returns the number of cylinders in the current scene.
+
+```typescript
+function getCylinderCount(): number
+```
+
+### `getTotalObjectCount()`
+
+Returns the total number of objects (spheres + boxes + cylinders).
+
+```typescript
+function getTotalObjectCount(): number
 ```
 
 ---
@@ -208,6 +234,33 @@ Sets the ground plane's reflectivity.
 
 ```typescript
 function updateGroundReflectivity(reflectivity: number): void
+```
+
+### `updateMaterialTransparency(transparency, refractiveIndex)`
+
+Sets the main sphere's transparency and refractive index.
+
+```typescript
+function updateMaterialTransparency(
+  transparency: number,    // 0.0 - 1.0
+  refractiveIndex: number  // 1.0 - 3.0
+): void
+```
+
+### `getMaterialTransparency()`
+
+Gets the main sphere's transparency value.
+
+```typescript
+function getMaterialTransparency(): number
+```
+
+### `getMaterialRefractiveIndex()`
+
+Gets the main sphere's refractive index.
+
+```typescript
+function getMaterialRefractiveIndex(): number
 ```
 
 ---
@@ -433,7 +486,13 @@ ctx.putImageData(imageData, 0, 0);
 const wasmModule = await initRaytracer();
 
 // Set up scene
-wasmModule.loadScenePreset(1);  // Three spheres
+wasmModule.loadScenePreset(4);  // Glass spheres
+
+// Get object counts
+const spheres = wasmModule.getSphereCount();
+const boxes = wasmModule.getBoxCount();
+const cylinders = wasmModule.getCylinderCount();
+console.log(`Scene has ${spheres} spheres, ${boxes} boxes, ${cylinders} cylinders`);
 
 // Configure lighting
 wasmModule.setLightPosition(0, 2, 4, -2);
@@ -445,9 +504,12 @@ wasmModule.setSoftShadows(true);
 wasmModule.setShadowSamples(16);
 wasmModule.setLightRadius(0, 0.5);
 
-// Configure material
+// Configure material (opaque)
 wasmModule.updateMaterial(0.6, 64, 0.3);
 wasmModule.updateSphereColor(0.9, 0.2, 0.15);
+
+// Or make it transparent (glass-like)
+wasmModule.updateMaterialTransparency(0.95, 1.5);  // 95% transparent, IOR 1.5
 
 // Configure camera
 wasmModule.updateCamera(0, 1, -4);

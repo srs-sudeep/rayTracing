@@ -13,12 +13,16 @@ enum class ScenePreset {
     SINGLE_SPHERE = 0,
     THREE_SPHERES = 1,
     MIRROR_SPHERES = 2,
-    RAINBOW = 3
+    RAINBOW = 3,
+    GLASS_SPHERES = 4,
+    PRIMITIVES = 5
 };
 
 class Scene {
 public:
     std::vector<Sphere> spheres;     // All spheres in scene
+    std::vector<Box> boxes;          // All boxes in scene
+    std::vector<Cylinder> cylinders; // All cylinders in scene
     std::vector<Light> lights;       // All light sources
     Plane groundPlane;               // Ground plane
     Camera camera;                   // Active camera
@@ -40,39 +44,72 @@ public:
 
 ```cpp
 Vec3 traceRay(const Ray& ray, int depth) const {
-    // Stop at max recursion depth
     if (depth >= maxReflectionDepth) {
         return getBackgroundColor(ray);
     }
 
-    // Find closest intersection
     HitRecord hit = trace(ray);
-
     if (!hit.hit) {
         return getBackgroundColor(ray);
     }
 
-    // Calculate local lighting (with soft shadows)
     Vec3 localColor = calculateLocalLighting(ray, hit);
-
-    // Add reflections if material is reflective
+    float transparency = hit.material.transparency;
     float reflectivity = hit.material.reflectivity;
-    if (reflectivity > 0.001f) {
-        Vec3 reflectDir = ray.direction.reflect(hit.normal);
-        Vec3 reflectOrigin = hit.point + hit.normal * 0.001f;
-        Ray reflectRay(reflectOrigin, reflectDir);
+
+    // Handle transparent materials with refraction
+    if (transparency > 0.001f) {
+        Vec3 normal = hit.normal;
+        bool entering = ray.direction.dot(normal) < 0;
         
-        Vec3 reflectedColor = traceRay(reflectRay, depth + 1);
+        // Determine refractive indices
+        float n1 = entering ? 1.0f : hit.material.refractiveIndex;
+        float n2 = entering ? hit.material.refractiveIndex : 1.0f;
+        if (!entering) normal = normal * -1.0f;
         
-        // Fresnel blending
-        float cosTheta = std::abs(hit.normal.dot(ray.direction * -1.0f));
-        float fresnel = reflectivity + (1.0f - reflectivity) * 
-                        std::pow(1.0f - cosTheta, 3.0f);
+        float eta = n1 / n2;
+        float cosI = std::abs(ray.direction.dot(normal));
         
-        localColor = localColor * (1.0f - fresnel) + reflectedColor * fresnel;
+        // Fresnel reflectance (Schlick approximation)
+        float fresnelReflect = fresnel(cosI, n1, n2);
+        
+        // Attempt refraction
+        Vec3 refractDir = ray.direction.refract(normal, eta);
+        
+        if (refractDir.lengthSquared() < 0.001f) {
+            // Total internal reflection
+            Vec3 reflectedColor = traceReflection(ray, hit, depth);
+            localColor = localColor * (1 - transparency) + reflectedColor * transparency;
+        } else {
+            // Mix reflection and refraction via Fresnel
+            Vec3 reflectedColor = traceReflection(ray, hit, depth);
+            Vec3 refractedColor = traceRefraction(ray, hit, refractDir, depth);
+            
+            Vec3 transparentColor = reflectedColor * fresnelReflect + 
+                                    refractedColor * (1 - fresnelReflect);
+            localColor = localColor * (1 - transparency) + transparentColor * transparency;
+        }
+    }
+    // Handle reflective (opaque) materials
+    else if (reflectivity > 0.001f) {
+        Vec3 reflectedColor = traceReflection(ray, hit, depth);
+        float fresnel = calculateFresnel(ray.direction, hit.normal, reflectivity);
+        localColor = localColor * (1 - fresnel) + reflectedColor * fresnel;
     }
 
     return localColor.clamp();
+}
+```
+
+### Fresnel Calculation
+
+```cpp
+// Schlick's approximation for Fresnel reflectance
+float fresnel(float cosTheta, float n1, float n2) const {
+    float r0 = (n1 - n2) / (n1 + n2);
+    r0 = r0 * r0;
+    float x = 1.0f - cosTheta;
+    return r0 + (1.0f - r0) * x * x * x * x * x;
 }
 ```
 
@@ -87,6 +124,22 @@ HitRecord trace(const Ray& ray) const {
     // Test all spheres
     for (const auto& sphere : spheres) {
         HitRecord hit = sphere.intersect(ray);
+        if (hit.hit && hit.t < closest.t) {
+            closest = hit;
+        }
+    }
+
+    // Test all boxes
+    for (const auto& box : boxes) {
+        HitRecord hit = box.intersect(ray);
+        if (hit.hit && hit.t < closest.t) {
+            closest = hit;
+        }
+    }
+
+    // Test all cylinders
+    for (const auto& cylinder : cylinders) {
+        HitRecord hit = cylinder.intersect(ray);
         if (hit.hit && hit.t < closest.t) {
             closest = hit;
         }
@@ -210,6 +263,8 @@ Vec3 getBackgroundColor(const Ray& ray) const {
 ```cpp
 void loadPreset(ScenePreset preset) {
     spheres.clear();
+    boxes.clear();
+    cylinders.clear();
 
     switch (preset) {
         case ScenePreset::SINGLE_SPHERE:
@@ -227,16 +282,28 @@ void loadPreset(ScenePreset preset) {
         case ScenePreset::RAINBOW:
             // 7 colored spheres in an arc
             break;
+
+        case ScenePreset::GLASS_SPHERES:
+            // Glass, diamond, and water spheres
+            // Demonstrates refraction and transparency
+            break;
+
+        case ScenePreset::PRIMITIVES:
+            // Mixed shapes: spheres, boxes, cylinders
+            // Showcases all primitive types
+            break;
     }
 }
 ```
 
-| Preset | Spheres | Description |
+| Preset | Objects | Description |
 |--------|---------|-------------|
-| Single | 1 | Classic red sphere |
-| Three | 3 | Red, blue, green |
-| Mirror | 5 | Chrome and metallic |
-| Rainbow | 7 | ROYGBIV arc |
+| Single | 1 sphere | Classic red sphere |
+| Three | 3 spheres | Red, blue, green |
+| Mirror | 5 spheres | Chrome and metallic |
+| Rainbow | 7 spheres | ROYGBIV arc |
+| Glass | 5 spheres | Transparent/refractive materials |
+| Primitives | 3 spheres, 2 boxes, 2 cylinders | Mixed shapes showcase |
 
 ## Update Methods
 
@@ -245,8 +312,15 @@ These are called from JavaScript via Emscripten bindings:
 ```cpp
 // Material updates
 void updateMainSphere(float specular, float shininess, float reflectivity);
+void updateMainSphereTransparency(float transparency, float refractiveIndex);
 void updateSphereColor(float r, float g, float b);
 void updateGroundReflectivity(float reflectivity);
+
+// Object counts
+int getSphereCount();
+int getBoxCount();
+int getCylinderCount();
+int getTotalObjectCount();
 
 // Light updates
 void updateLight(float x, float y, float z);

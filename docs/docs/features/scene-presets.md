@@ -105,6 +105,62 @@ for (int i = 0; i < 7; i++) {
 - **Spheres**: 7
 - **Good for**: Color variety, performance testing, fun visuals
 
+### 💎 Glass Spheres
+
+Transparent and refractive spheres demonstrating the refraction system.
+
+```cpp
+// Large glass sphere center
+Material glassMat = Material::glass();
+spheres.push_back(Sphere(Vec3(0, 0, 0), 1.0f, glassMat));
+
+// Diamond sphere left
+Material diamondMat = Material::diamond();
+spheres.push_back(Sphere(Vec3(-2.0f, -0.4f, 0.5f), 0.6f, diamondMat));
+
+// Blue-tinted glass right
+Material blueTint = Material::glass(Vec3(0.85f, 0.9f, 1.0f));
+spheres.push_back(Sphere(Vec3(1.8f, -0.5f, 0.8f), 0.5f, blueTint));
+
+// Solid red behind (to see distortion)
+Material redMat(Vec3(0.95f, 0.15f, 0.15f), 0.6f, 64.0f);
+spheres.push_back(Sphere(Vec3(0, -0.3f, -2.5f), 0.7f, redMat));
+
+// Water sphere
+Material waterMat = Material::water();
+spheres.push_back(Sphere(Vec3(-0.7f, -0.7f, 1.5f), 0.3f, waterMat));
+```
+
+- **Spheres**: 5
+- **Good for**: Refraction effects, Fresnel, transparent materials
+
+### 🧊 Primitives (Shapes)
+
+Mixed shapes showcasing spheres, boxes, and cylinders.
+
+```cpp
+// Red metallic sphere center
+Material sphereMat(Vec3(0.9f, 0.3f, 0.2f), 0.8f, 128.0f);
+spheres.push_back(Sphere(Vec3(0, 0, 0), 0.8f, sphereMat));
+
+// Blue cube left
+Material boxMat(Vec3(0.2f, 0.4f, 0.9f), 0.7f, 64.0f);
+boxes.push_back(Box(Vec3(-2.2f, -0.35f, 0.3f), Vec3(1.3f, 1.3f, 1.3f), boxMat));
+
+// Green cylinder right
+Material cylMat(Vec3(0.2f, 0.85f, 0.4f), 0.6f, 48.0f);
+cylinders.push_back(Cylinder(Vec3(2.0f, -1.0f, 0.5f), 0.5f, 1.4f, cylMat));
+
+// Glass cube
+Material glassMat = Material::glass();
+boxes.push_back(Box(Vec3(1.0f, -0.6f, 1.8f), Vec3(0.8f, 0.8f, 0.8f), glassMat));
+
+// More spheres and cylinders...
+```
+
+- **Objects**: 3 spheres, 2 boxes, 2 cylinders
+- **Good for**: Showcasing all primitive types, mixed materials
+
 ## Preset Selection
 
 Use the Scene toolbar above the canvas:
@@ -115,6 +171,8 @@ const SCENE_PRESETS = [
   { id: 1, name: 'Three', icon: '🎱' },
   { id: 2, name: 'Mirror', icon: '🪞' },
   { id: 3, name: 'Rainbow', icon: '🌈' },
+  { id: 4, name: 'Glass', icon: '💎' },
+  { id: 5, name: 'Shapes', icon: '🧊' },
 ];
 ```
 
@@ -124,7 +182,9 @@ Click a button to instantly switch scenes.
 
 ```cpp
 void Scene::loadPreset(ScenePreset preset) {
-    spheres.clear();  // Remove existing spheres
+    spheres.clear();
+    boxes.clear();
+    cylinders.clear();
     
     switch (preset) {
         case ScenePreset::SINGLE_SPHERE:
@@ -139,6 +199,12 @@ void Scene::loadPreset(ScenePreset preset) {
         case ScenePreset::RAINBOW:
             // Add rainbow spheres
             break;
+        case ScenePreset::GLASS_SPHERES:
+            // Add transparent spheres
+            break;
+        case ScenePreset::PRIMITIVES:
+            // Add mixed shapes
+            break;
     }
 }
 ```
@@ -147,7 +213,12 @@ JavaScript binding:
 
 ```javascript
 wasmModule.loadScenePreset(presetId);
-const count = wasmModule.getSphereCount();
+
+// Get object counts
+const spheres = wasmModule.getSphereCount();
+const boxes = wasmModule.getBoxCount();
+const cylinders = wasmModule.getCylinderCount();
+const total = wasmModule.getTotalObjectCount();
 ```
 
 ## Material Controls
@@ -168,12 +239,15 @@ Other spheres keep their preset materials.
 
 ## Performance Notes
 
-| Preset | Spheres | Relative Render Time |
+| Preset | Objects | Relative Render Time |
 |--------|---------|---------------------|
-| Single | 1 | 1× |
-| Three | 3 | ~1.5× |
-| Mirror | 5 | ~2× (more reflections) |
-| Rainbow | 7 | ~2.5× |
+| Single | 1 sphere | 1× |
+| Three | 3 spheres | ~1.5× |
+| Mirror | 5 spheres | ~2× (more reflections) |
+| Rainbow | 7 spheres | ~2.5× |
+| Glass | 5 spheres | ~3× (refraction rays) |
+| Shapes | 7 mixed | ~2.5× |
 
-More spheres = more intersection tests per ray.
+More objects = more intersection tests per ray.  
+Transparent objects = additional refraction rays per hit.
 
