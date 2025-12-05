@@ -11,11 +11,14 @@ const COLOR_PRESETS = [
 ];
 
 const MATERIAL_PRESETS = [
-  { name: 'Matte', specular: 0.1, shininess: 8, reflectivity: 0 },
-  { name: 'Plastic', specular: 0.4, shininess: 32, reflectivity: 0.1 },
-  { name: 'Glossy', specular: 0.6, shininess: 64, reflectivity: 0.3 },
-  { name: 'Metal', specular: 0.9, shininess: 128, reflectivity: 0.7 },
-  { name: 'Mirror', specular: 1.0, shininess: 256, reflectivity: 0.95 },
+  { name: 'Matte', specular: 0.1, shininess: 8, reflectivity: 0, transparency: 0, refractiveIndex: 1.0 },
+  { name: 'Plastic', specular: 0.4, shininess: 32, reflectivity: 0.1, transparency: 0, refractiveIndex: 1.0 },
+  { name: 'Glossy', specular: 0.6, shininess: 64, reflectivity: 0.3, transparency: 0, refractiveIndex: 1.0 },
+  { name: 'Metal', specular: 0.9, shininess: 128, reflectivity: 0.7, transparency: 0, refractiveIndex: 1.0 },
+  { name: 'Mirror', specular: 1.0, shininess: 256, reflectivity: 0.95, transparency: 0, refractiveIndex: 1.0 },
+  { name: 'Glass', specular: 1.0, shininess: 256, reflectivity: 0.1, transparency: 0.95, refractiveIndex: 1.5 },
+  { name: 'Diamond', specular: 1.0, shininess: 512, reflectivity: 0.2, transparency: 0.95, refractiveIndex: 2.4 },
+  { name: 'Water', specular: 0.8, shininess: 128, reflectivity: 0.1, transparency: 0.9, refractiveIndex: 1.33 },
 ];
 
 function MaterialControls({ material, onChange, disabled }) {
@@ -32,7 +35,9 @@ function MaterialControls({ material, onChange, disabled }) {
       ...material, 
       specular: preset.specular,
       shininess: preset.shininess,
-      reflectivity: preset.reflectivity
+      reflectivity: preset.reflectivity,
+      transparency: preset.transparency,
+      refractiveIndex: preset.refractiveIndex
     });
   };
 
@@ -99,6 +104,29 @@ function MaterialControls({ material, onChange, disabled }) {
           onChange={(v) => handleChange('reflectivity', v)}
           disabled={disabled}
         />
+        <Slider
+          id="transparency"
+          label="Transparency"
+          value={material.transparency}
+          min={0}
+          max={1}
+          step={0.05}
+          color="#34d399"
+          onChange={(v) => handleChange('transparency', v)}
+          disabled={disabled}
+        />
+        <Slider
+          id="refractiveIndex"
+          label="IOR (Refraction)"
+          value={material.refractiveIndex}
+          min={1}
+          max={3}
+          step={0.05}
+          color="#fbbf24"
+          onChange={(v) => handleChange('refractiveIndex', v)}
+          disabled={disabled || material.transparency < 0.01}
+          formatValue={(v) => v.toFixed(2)}
+        />
       </div>
 
       <div className="control-divider" />
@@ -111,7 +139,9 @@ function MaterialControls({ material, onChange, disabled }) {
             const isActive = 
               material.specular === preset.specular &&
               material.shininess === preset.shininess &&
-              material.reflectivity === preset.reflectivity;
+              material.reflectivity === preset.reflectivity &&
+              material.transparency === preset.transparency &&
+              Math.abs(material.refractiveIndex - preset.refractiveIndex) < 0.01;
             return (
               <button
                 key={preset.name}

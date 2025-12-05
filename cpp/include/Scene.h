@@ -15,7 +15,8 @@ enum class ScenePreset {
     SINGLE_SPHERE = 0,
     THREE_SPHERES = 1,
     MIRROR_SPHERES = 2,
-    RAINBOW = 3
+    RAINBOW = 3,
+    GLASS_SPHERES = 4
 };
 
 class Scene {
@@ -142,6 +143,30 @@ public:
                 }
                 break;
             }
+
+            case ScenePreset::GLASS_SPHERES: {
+                // Large glass sphere (center)
+                Material glassMat = Material::glass();
+                spheres.push_back(Sphere(Vec3(0.0f, 0.0f, 0.0f), 1.0f, glassMat));
+
+                // Diamond sphere (left)
+                Material diamondMat = Material::diamond();
+                spheres.push_back(Sphere(Vec3(-2.0f, -0.4f, 0.5f), 0.6f, diamondMat));
+
+                // Tinted glass sphere (right) - blue tint
+                Material blueTint = Material::glass(Vec3(0.85f, 0.9f, 1.0f));
+                spheres.push_back(Sphere(Vec3(1.8f, -0.5f, 0.8f), 0.5f, blueTint));
+
+                // Solid red sphere behind glass (to see refraction distortion)
+                Material redMat(Vec3(0.95f, 0.15f, 0.15f), 0.6f, 64.0f);
+                redMat.reflectivity = 0.2f;
+                spheres.push_back(Sphere(Vec3(0.0f, -0.3f, -2.5f), 0.7f, redMat));
+
+                // Small water sphere
+                Material waterMat = Material::water();
+                spheres.push_back(Sphere(Vec3(-0.7f, -0.7f, 1.5f), 0.3f, waterMat));
+                break;
+            }
         }
     }
 
@@ -260,6 +285,14 @@ public:
         return color;
     }
 
+    // Calculate Fresnel reflectance using Schlick's approximation
+    float fresnel(float cosTheta, float n1, float n2) const {
+        float r0 = (n1 - n2) / (n1 + n2);
+        r0 = r0 * r0;
+        float x = 1.0f - cosTheta;
+        return r0 + (1.0f - r0) * x * x * x * x * x;  // Schlick's approximation
+    }
+
     Vec3 traceRay(const Ray& ray, int depth) const {
         if (depth >= maxReflectionDepth) {
             return getBackgroundColor(ray);
@@ -272,9 +305,68 @@ public:
         }
 
         Vec3 localColor = calculateLocalLighting(ray, hit);
-
+        float transparency = hit.material.transparency;
         float reflectivity = hit.material.reflectivity;
-        if (reflectivity > 0.001f && depth < maxReflectionDepth) {
+
+        // Handle transparent materials with refraction
+        if (transparency > 0.001f && depth < maxReflectionDepth) {
+            Vec3 viewDir = ray.direction;
+            Vec3 normal = hit.normal;
+            
+            // Determine if we're entering or exiting the material
+            float n1, n2;
+            bool entering = viewDir.dot(normal) < 0;
+            
+            if (entering) {
+                n1 = 1.0f;  // Air
+                n2 = hit.material.refractiveIndex;
+            } else {
+                n1 = hit.material.refractiveIndex;
+                n2 = 1.0f;  // Air
+                normal = normal * -1.0f;  // Flip normal when exiting
+            }
+            
+            float eta = n1 / n2;
+            float cosI = std::abs(viewDir.dot(normal));
+            
+            // Calculate Fresnel reflectance
+            float fresnelReflect = fresnel(cosI, n1, n2);
+            
+            // Clamp fresnel to avoid over-reflection
+            fresnelReflect = std::fmin(fresnelReflect, 0.95f);
+            
+            // Try to refract
+            Vec3 refractDir = viewDir.refract(normal, eta);
+            
+            // Check for total internal reflection
+            bool totalInternalReflection = (refractDir.lengthSquared() < 0.001f);
+            
+            Vec3 reflectDir = viewDir.reflect(normal);
+            Vec3 reflectOrigin = hit.point + normal * 0.001f;
+            Ray reflectRay(reflectOrigin, reflectDir);
+            Vec3 reflectedColor = traceRay(reflectRay, depth + 1);
+            
+            if (totalInternalReflection) {
+                // Total internal reflection - all light is reflected
+                localColor = localColor * (1.0f - transparency) + reflectedColor * transparency;
+            } else {
+                // Mix refraction and reflection based on Fresnel
+                Vec3 refractOrigin = hit.point - normal * 0.001f;
+                Ray refractRay(refractOrigin, refractDir);
+                Vec3 refractedColor = traceRay(refractRay, depth + 1);
+                
+                // Apply material tint to refracted color
+                refractedColor = refractedColor * hit.material.color;
+                
+                // Blend reflection and refraction using Fresnel
+                Vec3 transparentColor = reflectedColor * fresnelReflect + refractedColor * (1.0f - fresnelReflect);
+                
+                // Blend with local color based on transparency
+                localColor = localColor * (1.0f - transparency) + transparentColor * transparency;
+            }
+        }
+        // Handle reflective (but not transparent) materials
+        else if (reflectivity > 0.001f && depth < maxReflectionDepth) {
             Vec3 viewDir = ray.direction;
             Vec3 reflectDir = viewDir.reflect(hit.normal);
             
@@ -304,6 +396,24 @@ public:
             spheres[0].material.shininess = shininess;
             spheres[0].material.reflectivity = reflectivity;
         }
+    }
+
+    // Update first sphere's transparency/refraction properties
+    void updateMainSphereTransparency(float transparency, float refractiveIndex) {
+        if (!spheres.empty()) {
+            spheres[0].material.transparency = std::fmax(0.0f, std::fmin(1.0f, transparency));
+            spheres[0].material.refractiveIndex = std::fmax(1.0f, std::fmin(3.0f, refractiveIndex));
+        }
+    }
+
+    // Get current transparency of main sphere
+    float getMainSphereTransparency() const {
+        return spheres.empty() ? 0.0f : spheres[0].material.transparency;
+    }
+
+    // Get current refractive index of main sphere
+    float getMainSphereRefractiveIndex() const {
+        return spheres.empty() ? 1.0f : spheres[0].material.refractiveIndex;
     }
 
     void updateSphereColor(float r, float g, float b) {

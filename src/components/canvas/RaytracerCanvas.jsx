@@ -72,6 +72,7 @@ function RaytracerCanvas({
     // Material updates
     wasmModule.updateMaterial(material.specular, material.shininess, material.reflectivity);
     wasmModule.updateSphereColor(material.color.r, material.color.g, material.color.b);
+    wasmModule.updateMaterialTransparency(material.transparency, material.refractiveIndex);
     
     // Camera updates
     wasmModule.updateCamera(camera.position.x, camera.position.y, camera.position.z);

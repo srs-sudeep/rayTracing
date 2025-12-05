@@ -108,6 +108,18 @@ void updateGroundReflectivity(float reflectivity) {
     globalScene.updateGroundReflectivity(reflectivity);
 }
 
+void updateMaterialTransparency(float transparency, float refractiveIndex) {
+    globalScene.updateMainSphereTransparency(transparency, refractiveIndex);
+}
+
+float getMaterialTransparency() {
+    return globalScene.getMainSphereTransparency();
+}
+
+float getMaterialRefractiveIndex() {
+    return globalScene.getMainSphereRefractiveIndex();
+}
+
 // ============================================================================
 // Camera API
 // ============================================================================
@@ -238,6 +250,9 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     emscripten::function("updateMaterial", &updateMaterial);
     emscripten::function("updateSphereColor", &updateSphereColor);
     emscripten::function("updateGroundReflectivity", &updateGroundReflectivity);
+    emscripten::function("updateMaterialTransparency", &updateMaterialTransparency);
+    emscripten::function("getMaterialTransparency", &getMaterialTransparency);
+    emscripten::function("getMaterialRefractiveIndex", &getMaterialRefractiveIndex);
     
     // Camera
     emscripten::function("updateCamera", &updateCamera);

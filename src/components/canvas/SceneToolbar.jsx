@@ -5,6 +5,7 @@ const SCENE_PRESETS = [
   { id: 1, name: 'Three', icon: '🎱' },
   { id: 2, name: 'Mirror', icon: '🪞' },
   { id: 3, name: 'Rainbow', icon: '🌈' },
+  { id: 4, name: 'Glass', icon: '💎' },
 ];
 
 function SceneToolbar({ activePreset, onPresetChange, sphereCount, disabled }) {

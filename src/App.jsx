@@ -29,7 +29,9 @@ function App() {
     color: { r: 0.9, g: 0.2, b: 0.15 },
     specular: 0.5, 
     shininess: 32, 
-    reflectivity: 0.3 
+    reflectivity: 0.3,
+    transparency: 0.0,
+    refractiveIndex: 1.5
   });
   const [camera, setCamera] = useState({ 
     position: { ...DEFAULT_CAMERA.position },
