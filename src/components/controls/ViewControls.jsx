@@ -8,6 +8,13 @@ const AA_OPTIONS = [
   { value: 2, label: '4×4', samples: 16 },
 ];
 
+const SHADOW_SAMPLE_OPTIONS = [
+  { value: 4, label: '4' },
+  { value: 9, label: '9' },
+  { value: 16, label: '16' },
+  { value: 25, label: '25' },
+];
+
 function ViewControls({ view, onChange, disabled }) {
   const handleChange = (prop, value) => {
     onChange({ ...view, [prop]: value });
@@ -79,6 +86,58 @@ function ViewControls({ view, onChange, disabled }) {
           disabled={disabled}
           formatValue={(v) => v.toFixed(0)}
         />
+      </div>
+
+      <div className="control-divider" />
+
+      {/* Soft Shadows Section */}
+      <div className="control-group">
+        <Toggle
+          id="soft-shadows"
+          label="Soft Shadows"
+          checked={view.softShadows}
+          onChange={(v) => handleChange('softShadows', v)}
+          disabled={disabled}
+        />
+        
+        {view.softShadows && (
+          <>
+            <Slider
+              id="light-radius"
+              label="Light Size"
+              value={view.lightRadius}
+              min={0.1}
+              max={1.5}
+              step={0.1}
+              color="#fbbf24"
+              onChange={(v) => handleChange('lightRadius', v)}
+              disabled={disabled}
+              formatValue={(v) => v.toFixed(1)}
+            />
+            
+            <div className="subsection">
+              <span className="subsection-label">Shadow Samples</span>
+              <div className="shadow-samples-grid">
+                {SHADOW_SAMPLE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    className={`shadow-sample-btn ${view.shadowSamples === opt.value ? 'active' : ''}`}
+                    onClick={() => handleChange('shadowSamples', opt.value)}
+                    disabled={disabled}
+                    title={`${opt.value} shadow rays per light`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <p className="soft-shadow-info">
+              <span className="shadow-rays">{view.shadowSamples} rays/light</span>
+              <span className="shadow-warning">• Penumbra effect</span>
+            </p>
+          </>
+        )}
       </div>
 
       <div className="control-divider" />

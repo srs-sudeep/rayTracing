@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include <vector>
 #include <algorithm>
+#include <random>
 
 // Scene preset types
 enum class ScenePreset {
@@ -28,6 +29,14 @@ public:
     bool showGroundPlane;
     int maxReflectionDepth;
     ScenePreset currentPreset;
+    
+    // Soft shadow settings
+    bool softShadowsEnabled;
+    int shadowSamples;
+    
+    // Random number generator for soft shadows
+    mutable std::mt19937 rng;
+    mutable std::uniform_real_distribution<float> dist;
 
     Scene() 
         : backgroundColor(Vec3(0.05f, 0.05f, 0.08f))
@@ -35,12 +44,16 @@ public:
         , showGroundPlane(true)
         , maxReflectionDepth(5)
         , currentPreset(ScenePreset::SINGLE_SPHERE)
+        , softShadowsEnabled(false)
+        , shadowSamples(8)
+        , rng(42)
+        , dist(0.0f, 1.0f)
     {
         // Ground plane with subtle reflectivity
         groundPlane.material.reflectivity = 0.15f;
         
-        // Default light
-        lights.push_back(Light(Vec3(2.0f, 3.0f, -2.0f), Vec3(1.0f, 1.0f, 1.0f), 1.0f));
+        // Default light with radius for soft shadows
+        lights.push_back(Light(Vec3(2.0f, 3.0f, -2.0f), Vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.5f));
         
         // Load default scene
         loadPreset(ScenePreset::SINGLE_SPHERE);
@@ -156,8 +169,8 @@ public:
         return closest;
     }
 
-    // Check if a point is in shadow
-    bool isInShadow(const Vec3& point, const Vec3& lightPos) const {
+    // Check if a point is in shadow (single ray - hard shadows)
+    bool isInShadowHard(const Vec3& point, const Vec3& lightPos) const {
         Vec3 toLight = lightPos - point;
         float lightDistance = toLight.length();
         Vec3 lightDir = toLight.normalize();
@@ -175,6 +188,46 @@ public:
         return false;
     }
 
+    // Calculate shadow factor with soft shadows (area lights)
+    // Returns 0.0 = fully in shadow, 1.0 = fully lit
+    float calculateShadowFactor(const Vec3& point, const Light& light) const {
+        if (!softShadowsEnabled || light.radius <= 0.0f) {
+            // Hard shadows - simple binary test
+            return isInShadowHard(point, light.position) ? 0.3f : 1.0f;
+        }
+        
+        // Soft shadows - multiple samples on the area light
+        int litSamples = 0;
+        int samples = shadowSamples;
+        
+        // Use stratified sampling for better distribution
+        int sqrtSamples = static_cast<int>(std::sqrt(static_cast<float>(samples)));
+        if (sqrtSamples < 2) sqrtSamples = 2;
+        
+        for (int i = 0; i < sqrtSamples; ++i) {
+            for (int j = 0; j < sqrtSamples; ++j) {
+                // Stratified random offset within each cell
+                float u = (i + dist(rng)) / sqrtSamples;
+                float v = (j + dist(rng)) / sqrtSamples;
+                
+                // Get sample point on area light (disk facing the point)
+                Vec3 samplePos = light.getSamplePointDisk(u, v, point);
+                
+                // Test shadow ray to this sample
+                if (!isInShadowHard(point, samplePos)) {
+                    litSamples++;
+                }
+            }
+        }
+        
+        // Calculate soft shadow factor
+        int totalSamples = sqrtSamples * sqrtSamples;
+        float visibility = static_cast<float>(litSamples) / static_cast<float>(totalSamples);
+        
+        // Remap to avoid completely black shadows (ambient remains)
+        return 0.3f + visibility * 0.7f;
+    }
+
     Vec3 getBackgroundColor(const Ray& ray) const {
         float t = 0.5f * (ray.direction.y + 1.0f);
         t = std::fmax(0.0f, std::fmin(1.0f, t));
@@ -188,10 +241,8 @@ public:
         for (const auto& light : lights) {
             Vec3 lightDir = (light.position - hit.point).normalize();
             
-            float shadowFactor = 1.0f;
-            if (isInShadow(hit.point, light.position)) {
-                shadowFactor = 0.3f;
-            }
+            // Calculate shadow factor (soft or hard depending on settings)
+            float shadowFactor = calculateShadowFactor(hit.point, light);
             
             float diff = std::max(0.0f, hit.normal.dot(lightDir));
             Vec3 diffuse = hit.material.color * diff * hit.material.diffuse;
@@ -389,4 +440,34 @@ public:
     float getCameraTargetX() const { return camera.getTargetX(); }
     float getCameraTargetY() const { return camera.getTargetY(); }
     float getCameraTargetZ() const { return camera.getTargetZ(); }
+
+    // ========================================
+    // Soft Shadow Settings
+    // ========================================
+    
+    void setSoftShadows(bool enabled) {
+        softShadowsEnabled = enabled;
+    }
+
+    bool getSoftShadows() const {
+        return softShadowsEnabled;
+    }
+
+    void setShadowSamples(int samples) {
+        shadowSamples = std::max(1, std::min(64, samples));
+    }
+
+    int getShadowSamples() const {
+        return shadowSamples;
+    }
+
+    void setLightRadius(int index, float radius) {
+        if (index >= 0 && index < static_cast<int>(lights.size())) {
+            lights[index].radius = std::fmax(0.0f, std::fmin(2.0f, radius));
+        }
+    }
+
+    float getLightRadius(int index) const {
+        return (index >= 0 && index < static_cast<int>(lights.size())) ? lights[index].radius : 0.5f;
+    }
 };

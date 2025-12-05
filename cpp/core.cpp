@@ -178,6 +178,34 @@ int getSamplesPerPixel() {
 }
 
 // ============================================================================
+// Soft Shadows API
+// ============================================================================
+
+void setSoftShadows(bool enabled) {
+    globalScene.setSoftShadows(enabled);
+}
+
+bool getSoftShadows() {
+    return globalScene.getSoftShadows();
+}
+
+void setShadowSamples(int samples) {
+    globalScene.setShadowSamples(samples);
+}
+
+int getShadowSamples() {
+    return globalScene.getShadowSamples();
+}
+
+void setLightRadius(int index, float radius) {
+    globalScene.setLightRadius(index, radius);
+}
+
+float getLightRadius(int index) {
+    return globalScene.getLightRadius(index);
+}
+
+// ============================================================================
 // Emscripten Bindings
 // ============================================================================
 
@@ -235,6 +263,14 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     emscripten::function("setAntiAliasing", &setAntiAliasing);
     emscripten::function("getAntiAliasing", &getAntiAliasing);
     emscripten::function("getSamplesPerPixel", &getSamplesPerPixel);
+    
+    // Soft Shadows
+    emscripten::function("setSoftShadows", &setSoftShadows);
+    emscripten::function("getSoftShadows", &getSoftShadows);
+    emscripten::function("setShadowSamples", &setShadowSamples);
+    emscripten::function("getShadowSamples", &getShadowSamples);
+    emscripten::function("setLightRadius", &setLightRadius);
+    emscripten::function("getLightRadius", &getLightRadius);
     
     // Vector type
     emscripten::register_vector<uint8_t>("VectorUint8");

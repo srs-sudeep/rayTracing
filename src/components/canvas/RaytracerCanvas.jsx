@@ -85,6 +85,14 @@ function RaytracerCanvas({
     wasmModule.updateGroundReflectivity(view.groundReflectivity);
     wasmModule.setMaxReflectionDepth(view.maxBounces);
     wasmModule.setAntiAliasing(view.antiAliasing);
+    
+    // Soft shadow settings
+    wasmModule.setSoftShadows(view.softShadows);
+    wasmModule.setShadowSamples(view.shadowSamples);
+    // Apply light radius to all lights
+    for (let i = 0; i < lights.length; i++) {
+      wasmModule.setLightRadius(i, view.lightRadius);
+    }
 
     // Time the render
     const startTime = performance.now();
@@ -226,7 +234,7 @@ function RaytracerCanvas({
         onTouchCancel={handleTouchEnd}
       />
       <div className="canvas-badge top-left">
-        {view.resolution}² • {lights.length}💡{view.antiAliasing > 0 && ` • AA`}
+        {view.resolution}² • {lights.length}💡{view.antiAliasing > 0 && ` • AA`}{view.softShadows && ` • Soft`}
       </div>
       <div className="canvas-badge bottom-right">
         {isMobile ? 'Touch to orbit' : 'Drag to orbit • Scroll to zoom'}

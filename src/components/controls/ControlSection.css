@@ -333,6 +333,64 @@
   color: #f59e0b;
 }
 
+/* Shadow Samples Grid */
+.shadow-samples-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.shadow-sample-btn {
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.shadow-sample-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-color: var(--border-accent);
+}
+
+.shadow-sample-btn.active {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-color: #f59e0b;
+  color: white;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.shadow-sample-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Soft Shadow Info */
+.soft-shadow-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.shadow-rays {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.shadow-warning {
+  color: #f59e0b;
+}
+
 /* Action Buttons */
 .control-actions {
   display: flex;
