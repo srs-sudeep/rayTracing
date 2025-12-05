@@ -56,17 +56,64 @@
   text-overflow: ellipsis;
 }
 
-/* Always show labels, just make them smaller on narrow widths */
-@media (max-width: 350px) {
+/* ============================================================================
+   Responsive Tabs
+   ============================================================================ */
+
+/* Tablets */
+@media (max-width: 900px) {
+  .tab {
+    padding: var(--space-sm) var(--space-xs);
+    font-size: 0.6rem;
+    gap: 3px;
+  }
+
+  .tab-icon {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .tab {
+    padding: var(--space-xs);
+    font-size: 0.55rem;
+    gap: 2px;
+  }
+
+  .tab-icon {
+    font-size: 0.75rem;
+  }
+
+  .tab-label {
+    font-size: 0.5rem;
+    letter-spacing: 0;
+  }
+}
+
+/* Small Mobile - Hide labels */
+@media (max-width: 480px) {
   .tab-label {
     display: none;
   }
   
   .tab {
     padding: var(--space-sm);
+    gap: 0;
   }
   
   .tab-icon {
-    font-size: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra Small */
+@media (max-width: 360px) {
+  .tab {
+    padding: var(--space-xs);
+  }
+  
+  .tab-icon {
+    font-size: 0.85rem;
   }
 }

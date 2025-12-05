@@ -15,6 +15,7 @@ function RaytracerCanvas({
   const containerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [displaySize, setDisplaySize] = useState({ width: 700, height: 700 });
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 480);
   const lastMousePos = useRef({ x: 0, y: 0 });
   const renderRequestRef = useRef(null);
   const lastPresetRef = useRef(scenePreset);
@@ -24,18 +25,25 @@ function RaytracerCanvas({
     const updateSize = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        const maxSize = Math.min(rect.width - 20, rect.height - 20);
-        const size = Math.max(300, maxSize);
+        const mobile = window.innerWidth <= 480;
+        setIsMobile(mobile);
+        const padding = mobile ? 10 : 20;
+        const maxSize = Math.min(rect.width - padding, rect.height - padding);
+        const minSize = window.innerWidth <= 360 ? 200 : 250;
+        const size = Math.max(minSize, maxSize);
         setDisplaySize({ width: size, height: size });
       }
     };
 
     updateSize();
     window.addEventListener('resize', updateSize);
+    // Also listen for orientation changes on mobile
+    window.addEventListener('orientationchange', () => setTimeout(updateSize, 100));
     const timeout = setTimeout(updateSize, 100);
     
     return () => {
       window.removeEventListener('resize', updateSize);
+      window.removeEventListener('orientationchange', updateSize);
       clearTimeout(timeout);
     };
   }, []);
@@ -164,6 +172,38 @@ function RaytracerCanvas({
     });
   };
 
+  // Touch handlers for mobile
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      lastMousePos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || !wasmModule || e.touches.length !== 1) return;
+    e.preventDefault();
+
+    const deltaX = e.touches[0].clientX - lastMousePos.current.x;
+    const deltaY = e.touches[0].clientY - lastMousePos.current.y;
+    lastMousePos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+
+    wasmModule.orbitCamera(deltaX, deltaY);
+    
+    onCameraChange({
+      ...camera,
+      position: {
+        x: wasmModule.getCameraX(),
+        y: wasmModule.getCameraY(),
+        z: wasmModule.getCameraZ()
+      }
+    });
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <div className="canvas-container" ref={containerRef}>
       <canvas
@@ -180,12 +220,16 @@ function RaytracerCanvas({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       />
       <div className="canvas-badge top-left">
-        {view.resolution}×{view.resolution} • {lights.length} light{lights.length > 1 ? 's' : ''}{view.antiAliasing > 0 && ` • AA ${view.antiAliasing === 1 ? '2×2' : '4×4'}`}
+        {view.resolution}² • {lights.length}💡{view.antiAliasing > 0 && ` • AA`}
       </div>
       <div className="canvas-badge bottom-right">
-        Drag to orbit • Scroll to zoom
+        {isMobile ? 'Touch to orbit' : 'Drag to orbit • Scroll to zoom'}
       </div>
     </div>
   );

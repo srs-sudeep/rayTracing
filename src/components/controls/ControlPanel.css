@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  flex: 1;
 }
 
 .control-content {
@@ -30,4 +31,38 @@
 
 .control-content::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+}
+
+/* ============================================================================
+   Responsive Control Panel
+   ============================================================================ */
+
+/* Stack on mobile */
+@media (max-width: 900px) {
+  .control-panel {
+    border-radius: var(--radius-md);
+    max-height: none;
+  }
+
+  .control-content {
+    max-height: 400px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .control-panel {
+    border-radius: var(--radius-sm);
+  }
+
+  .control-content {
+    max-height: 350px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .control-content {
+    max-height: 300px;
+  }
 }

@@ -54,3 +54,45 @@
   cursor: not-allowed;
 }
 
+/* Responsive Toggle */
+@media (max-width: 768px) {
+  .toggle-label {
+    font-size: 0.7rem;
+  }
+
+  .toggle {
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+  }
+
+  .toggle-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .toggle.active .toggle-thumb {
+    left: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toggle-label {
+    font-size: 0.65rem;
+  }
+
+  .toggle {
+    width: 34px;
+    height: 18px;
+    border-radius: 9px;
+  }
+
+  .toggle-thumb {
+    width: 12px;
+    height: 12px;
+  }
+
+  .toggle.active .toggle-thumb {
+    left: 18px;
+  }
+}

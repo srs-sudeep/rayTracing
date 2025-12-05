@@ -134,16 +134,44 @@
   font-size: 0.9rem;
 }
 
+/* ============================================================================
+   Responsive Header
+   ============================================================================ */
+
+/* Tablets */
+@media (max-width: 900px) {
+  .header {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .header-stats {
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .stat-value {
+    font-size: 0.8rem;
+  }
+
+  .stat-label {
+    font-size: 0.55rem;
+  }
+}
+
+/* Small Tablets and Large Phones */
 @media (max-width: 768px) {
   .header {
     justify-content: center;
     gap: var(--space-sm);
+    padding: var(--space-sm);
   }
   
   .header-stats {
     order: 3;
     width: 100%;
     justify-content: center;
+    flex-wrap: wrap;
   }
   
   .logo-tagline {
@@ -152,5 +180,109 @@
   
   .header-btn span:last-child {
     display: none;
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logo-text h1 {
+    font-size: 1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .header {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .header-brand {
+    flex: 1;
+  }
+
+  .header-actions {
+    gap: var(--space-xs);
+  }
+
+  .header-btn {
+    padding: var(--space-xs);
+  }
+
+  .header-stats {
+    gap: var(--space-xs);
+    padding: var(--space-xs);
+  }
+
+  .stat {
+    gap: 2px;
+  }
+
+  .stat-value {
+    font-size: 0.75rem;
+  }
+
+  .stat-label {
+    font-size: 0.5rem;
+  }
+
+  .stat-divider {
+    height: 12px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .header-brand {
+    flex: initial;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .logo-text h1 {
+    font-size: 0.9rem;
+  }
+
+  .header-stats {
+    order: 3;
+    justify-content: space-around;
+    padding: var(--space-xs) var(--space-sm);
+    margin-top: var(--space-xs);
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+  .header-stats {
+    flex-direction: row;
+    gap: var(--space-sm);
+  }
+
+  .stat-divider {
+    display: none;
+  }
+
+  .stat {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .stat-value {
+    font-size: 0.7rem;
+  }
+
+  .stat-label {
+    font-size: 0.45rem;
   }
 }

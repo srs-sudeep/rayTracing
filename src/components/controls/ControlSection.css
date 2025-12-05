@@ -525,3 +525,235 @@
   font-weight: 500;
 }
 
+/* ============================================================================
+   Responsive Control Section
+   ============================================================================ */
+
+/* Tablets */
+@media (max-width: 900px) {
+  .control-section {
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .control-group {
+    gap: var(--space-sm);
+  }
+
+  .resolution-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .aa-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Small Tablets and Large Phones */
+@media (max-width: 768px) {
+  .control-section {
+    padding: var(--space-sm);
+  }
+
+  .group-label {
+    font-size: 0.65rem;
+  }
+
+  .res-btn,
+  .aa-btn {
+    padding: var(--space-xs);
+    font-size: 0.65rem;
+  }
+
+  .resolution-note,
+  .aa-info {
+    font-size: 0.6rem;
+  }
+
+  .light-tabs {
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .light-tab {
+    padding: 5px 6px;
+    font-size: 0.65rem;
+    gap: 4px;
+  }
+
+  .light-indicator {
+    width: 8px;
+    height: 8px;
+  }
+
+  .light-action-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 1rem;
+  }
+
+  .light-color-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .color-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .control-section {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .control-divider {
+    margin: var(--space-xs) 0;
+  }
+
+  .resolution-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+  }
+
+  .aa-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+  }
+
+  .res-btn,
+  .aa-btn {
+    padding: 6px 4px;
+    font-size: 0.6rem;
+  }
+
+  .light-selector {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .light-tabs {
+    flex: 1;
+    min-width: 0;
+    order: 1;
+  }
+
+  .light-actions {
+    order: 2;
+  }
+
+  .light-tab {
+    padding: 4px 5px;
+    font-size: 0.6rem;
+  }
+
+  .light-label {
+    display: none;
+  }
+
+  .light-indicator {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .control-section {
+    padding: var(--space-xs);
+  }
+
+  .group-label {
+    font-size: 0.6rem;
+  }
+
+  .resolution-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+  }
+
+  .res-btn {
+    padding: var(--space-xs);
+    font-size: 0.65rem;
+  }
+
+  .aa-info {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .color-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .light-color-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .light-action-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra Small */
+@media (max-width: 360px) {
+  .control-group {
+    gap: var(--space-xs);
+  }
+
+  .group-label {
+    font-size: 0.55rem;
+  }
+
+  .res-btn,
+  .aa-btn {
+    padding: 5px 3px;
+    font-size: 0.55rem;
+  }
+
+  .resolution-note,
+  .aa-info {
+    font-size: 0.55rem;
+  }
+
+  .control-hint {
+    font-size: 0.6rem;
+    padding: var(--space-xs);
+  }
+
+  .light-tabs {
+    gap: 1px;
+    padding: 2px;
+  }
+
+  .light-tab {
+    padding: 4px;
+  }
+
+  .light-indicator {
+    width: 8px;
+    height: 8px;
+  }
+
+  .color-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .light-color-btn {
+    width: 22px;
+    height: 22px;
+  }
+
+  .light-action-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 0.8rem;
+  }
+}
