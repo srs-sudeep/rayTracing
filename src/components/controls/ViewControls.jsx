@@ -2,10 +2,18 @@ import Toggle from '../ui/Toggle';
 import Slider from '../ui/Slider';
 import './ControlSection.css';
 
+const AA_OPTIONS = [
+  { value: 0, label: 'Off', samples: 1 },
+  { value: 1, label: '2×2', samples: 4 },
+  { value: 2, label: '4×4', samples: 16 },
+];
+
 function ViewControls({ view, onChange, disabled }) {
   const handleChange = (prop, value) => {
     onChange({ ...view, [prop]: value });
   };
+
+  const currentAA = AA_OPTIONS.find(opt => opt.value === view.antiAliasing) || AA_OPTIONS[0];
 
   return (
     <div className="control-section">
@@ -71,6 +79,31 @@ function ViewControls({ view, onChange, disabled }) {
           disabled={disabled}
           formatValue={(v) => v.toFixed(0)}
         />
+      </div>
+
+      <div className="control-divider" />
+
+      <div className="control-group">
+        <span className="group-label">Anti-Aliasing</span>
+        <div className="aa-grid">
+          {AA_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              className={`aa-btn ${view.antiAliasing === opt.value ? 'active' : ''}`}
+              onClick={() => handleChange('antiAliasing', opt.value)}
+              disabled={disabled}
+              title={`${opt.samples} sample${opt.samples > 1 ? 's' : ''} per pixel`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        <p className="aa-info">
+          <span className="aa-samples">{currentAA.samples} sample{currentAA.samples > 1 ? 's' : ''}/px</span>
+          {view.antiAliasing > 0 && (
+            <span className="aa-warning">• Slower render</span>
+          )}
+        </p>
       </div>
 
       <div className="control-divider" />

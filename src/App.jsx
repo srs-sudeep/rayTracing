@@ -42,7 +42,8 @@ function App() {
     gridScale: 1.0,
     groundReflectivity: 0.15,
     maxBounces: 5,
-    resolution: 512 
+    resolution: 512,
+    antiAliasing: 0  // 0=Off, 1=2x2, 2=4x4
   });
   const [renderTime, setRenderTime] = useState(0);
 

@@ -162,6 +162,22 @@ void setMaxReflectionDepth(int depth) {
 }
 
 // ============================================================================
+// Anti-Aliasing API
+// ============================================================================
+
+void setAntiAliasing(int level) {
+    globalRenderer.setAntiAliasing(level);
+}
+
+int getAntiAliasing() {
+    return globalRenderer.getAntiAliasing();
+}
+
+int getSamplesPerPixel() {
+    return globalRenderer.getSamplesPerPixel();
+}
+
+// ============================================================================
 // Emscripten Bindings
 // ============================================================================
 
@@ -214,6 +230,11 @@ EMSCRIPTEN_BINDINGS(raytracer_module) {
     emscripten::function("setGridScale", &setGridScale);
     emscripten::function("setShowGroundPlane", &setShowGroundPlane);
     emscripten::function("setMaxReflectionDepth", &setMaxReflectionDepth);
+    
+    // Anti-Aliasing
+    emscripten::function("setAntiAliasing", &setAntiAliasing);
+    emscripten::function("getAntiAliasing", &getAntiAliasing);
+    emscripten::function("getSamplesPerPixel", &getSamplesPerPixel);
     
     // Vector type
     emscripten::register_vector<uint8_t>("VectorUint8");

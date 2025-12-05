@@ -76,6 +76,7 @@ function RaytracerCanvas({
     wasmModule.setGridScale(view.gridScale);
     wasmModule.updateGroundReflectivity(view.groundReflectivity);
     wasmModule.setMaxReflectionDepth(view.maxBounces);
+    wasmModule.setAntiAliasing(view.antiAliasing);
 
     // Time the render
     const startTime = performance.now();
@@ -181,7 +182,7 @@ function RaytracerCanvas({
         onWheel={handleWheel}
       />
       <div className="canvas-badge top-left">
-        {view.resolution}×{view.resolution} • {lights.length} light{lights.length > 1 ? 's' : ''}
+        {view.resolution}×{view.resolution} • {lights.length} light{lights.length > 1 ? 's' : ''}{view.antiAliasing > 0 && ` • AA ${view.antiAliasing === 1 ? '2×2' : '4×4'}`}
       </div>
       <div className="canvas-badge bottom-right">
         Drag to orbit • Scroll to zoom
