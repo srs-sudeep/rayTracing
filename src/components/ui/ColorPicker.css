@@ -1,0 +1,146 @@
+.color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.color-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.color-picker-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.color-picker-value {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.color-picker-row {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+/* Custom color picker button */
+.color-picker-custom {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-accent);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-picker-custom:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.2);
+}
+
+.color-picker-custom:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.color-picker-icon {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.color-input-hidden {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Preset color grid */
+.color-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  flex: 1;
+}
+
+.color-preset-btn {
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: 24px;
+  max-width: 32px;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.color-preset-btn:hover:not(:disabled) {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+  z-index: 1;
+}
+
+.color-preset-btn.active {
+  border-color: white;
+  box-shadow: 0 0 0 2px var(--accent-primary), 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.color-preset-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .color-picker-custom {
+    width: 42px;
+    height: 42px;
+  }
+
+  .color-preset-btn {
+    max-width: 28px;
+  }
+
+  .color-preset-grid {
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .color-picker-custom {
+    width: 38px;
+    height: 38px;
+  }
+
+  .color-picker-icon {
+    font-size: 1rem;
+  }
+
+  .color-preset-btn {
+    max-width: 24px;
+  }
+
+  .color-preset-grid {
+    gap: 4px;
+  }
+}
+
